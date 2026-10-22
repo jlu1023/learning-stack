@@ -17,3 +17,8 @@ extra_courses: {}
 # (Courses whose notes carry a `lecture:` field always use Lecture.)
 unit_labels: {}
 #  COURSE202: Week
+
+# obsidian: wikilinks, Dataview tables, Mermaid rendered by Obsidian.
+# plain: any editor (VS Code, Typora, a text editor): relative Markdown links,
+# roadmaps exported as SVG images and a static Review Queue.
+frontend: obsidian

@@ -1,20 +1,30 @@
 ---
 name: ingest
-description: Turn new material (lecture slides, notes, a textbook section, a web page or a file in Inbox/) into atomic course notes in the vault, with depends_on links, then regenerate the course roadmap.
+description: Turn new material into atomic course notes in the vault, from any source - PDF (including scans and maths-heavy pages), Word, PowerPoint, Markdown, photos of handwritten notes, a web page, or a file in Inbox/ - with depends_on links, then regenerate the course roadmap.
 argument-hint: <file path | url | pasted content | (empty for Inbox/)>
 ---
 
 Process new material into the vault: `$ARGUMENTS`.
 
-1. **Read the rules.** Read the vault's `CLAUDE.md` (atomic notes, page types, frontmatter, LaTeX, cross-linking). Load the `method` skill's Grounding and trust section.
+In library mode (`VL where` shows a `library`), the learner's files are not copied into notes: use the `connect` skill instead, which builds cards that point back to them.
 
-2. **Identify the input.**
-   - A file path: read it. Course material normally sits in `Sources/courses/<COURSE>/`.
-   - A URL: fetch it.
-   - Pasted content: use it directly.
-   - Empty: list `Inbox/` and process each file in turn, asking before processing more than 3.
+1. **Read the rules.** Read the vault's `CLAUDE.md` (atomic notes, page types, frontmatter, LaTeX, links) and `vault-learning.yaml` (`frontend`: wikilinks for Obsidian, relative Markdown links for plain). Load the `method` skill's Grounding and trust section. `VL` means the engine command in the method skill.
+
+2. **Get the text.**
+
+   | Input | How |
+   |---|---|
+   | Markdown or text file | Read it. |
+   | PDF, Word (.docx), PowerPoint (.pptx), saved web page (.html) | `VL convert "<path>"`. Read its `text_file`, then **every image in `images`**: those pages are scans, or pages whose mathematics the text layer garbles, so take formulas from the image, not the text. For a short or maths-heavy PDF, `--render all` reads every page as an image. |
+   | Photo or scan of handwritten notes (.png, .jpg) | Read the image directly. Mark any word or symbol you cannot read as `[?: ...]` and ask the learner, never guess. |
+   | URL | Fetch the page, save the readable text to `Sources/web/<title>.md` with its URL and today's date at the top, then work from that file. |
+   | Pasted content | Use it directly. |
+   | Nothing | List `Inbox/` and process each file in turn, asking before processing more than 3. |
+
+   If `convert` returns an `error` (a missing converter such as pandoc or pypdfium2), give the learner its `install` line and stop for that file. Never write notes from a file you could not read.
 
 3. **Classify it.** Course material needs a course code, a module and a `section:` (the source's numbered item, or slide and page). Ask if any is unclear. Anything else is a source: one note in `Sources/` with the source template, plus concept notes for its key ideas.
+   - **Problem sheets, exercise sets and past papers** are not turned into notes with answers. Exercises are cited ("attempt it first"); past papers may only inform an Exam Profile (style, never questions).
 
 4. **Search the vault first** for notes on the same concepts (names and synonyms). Extend an existing note rather than creating a duplicate.
 
@@ -24,10 +34,10 @@ Process new material into the vault: `$ARGUMENTS`.
    - One concept per note, using the templates in `Templates/`: a chunk of a lecture is often a definition, a theorem, its proof and an example, as four linked notes.
    - Write in your own words. Never paste slides, textbook text or problem sheets wholesale; short quoted statements of definitions and theorems are fine, with `section:` saying where they come from.
    - Exercises the source leaves to the reader stay unsolved: the note cites the exercise and says "attempt it first".
-   - Fill `depends_on` with every note the concept needs (the engine builds the roadmap from it) and `used_in` in the other direction.
+   - Fill `depends_on` with every note the concept needs (the engine builds the roadmap from it) and `used_in` in the other direction, in the configured link style.
    - New notes carry no learner-state fields: they start as unseen.
-   - Maths is LaTeX. No em dashes.
+   - Maths is LaTeX. Anything you could not read is `[?: ...]`. No em dashes.
 
-7. **Regenerate the roadmap** for each course touched: `VL roadmap <COURSE>` (`VL` is the engine command in the `method` skill). For a new course, create `Courses/<CODE>/<CODE> Syllabus.md` first. Never hand-edit between the `%% roadmap:start %%` and `%% roadmap:end %%` markers.
+7. **Regenerate the roadmap** for each course touched: `VL roadmap <COURSE>`. For a new course, create `Courses/<CODE>/<CODE> Syllabus.md` first. Never hand-edit between the roadmap markers.
 
-8. **Log and report.** Append `ingest | <source>` to `_meta/log.md`. Report the notes created and extended, the roadmap's data gaps (broken links, cycles, `used_in` mismatches), and anything that needs the learner's attention.
+8. **Log and report.** Append `ingest | <source>` to `_meta/log.md`. Report the notes created and extended, the roadmap's data gaps (broken links, cycles, `used_in` mismatches), every `[?: ...]` left for the learner, and any page you could only read as an image.

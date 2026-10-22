@@ -34,7 +34,7 @@ Run a teaching session for `$ARGUMENTS`.
 7. **Teach and lock in,** one node at a time, per the method and the passes and ladder in Teaching Style:
    - **Choose the pass from the node's learner state:** `unseen` is pass 1; `learning` is pass 2; `secure` or `mastered` is pass 3. If the learner says `pass 1` or `deepen`, use that instead. If a recall question in pass 2 or 3 fails, record the fail and switch that node to pass 1 for the rest of the session. Record the pass in the session file alongside `stopped_at`.
    - Use only that pass's rungs. For any problem that needs working, ask the learner to work on paper and type only the final answer or the line they are unsure of; if they paste a photo, read it and point to the first broken line.
-   - Read the node's note and its proof and example notes first.
+   - Read the node's note and its proof and example notes first. For a card (library mode), read its source file at `source_anchor` (`VL convert` it if it is not text) and teach from that; never edit the source.
    - Teach concrete before symbolic, make them generate, use the hint ladder, point at the first broken line, enforce the restatement, and ask one hypothesis question per theorem.
    - Run the lock-in quiz: 3 questions, confidence first, then the pass rule.
    - On a pass, run `VL record "<node>" --result pass` and advance.

@@ -65,6 +65,24 @@ def _run(mmdc: Path, cfg: Path | None, src: Path, out: Path) -> tuple[bool, str]
     return proc.returncode == 0, "\n".join(msg[:4])
 
 
+def render_svgs(diagrams: list[tuple[str, str]]) -> dict[str, str]:
+    """{label: svg text} for each (label, diagram); a diagram that fails to render is left out."""
+    mmdc = _mmdc()
+    tmp = Path(tempfile.mkdtemp(prefix="vault-learning-svg-"))
+    try:
+        cfg = _puppeteer_config(tmp)
+        out = {}
+        for i, (label, code) in enumerate(diagrams):
+            src, dst = tmp / f"d{i}.mmd", tmp / f"d{i}.svg"
+            src.write_text(code, encoding="utf-8")
+            ok, _ = _run(mmdc, cfg, src, dst)
+            if ok and dst.exists():
+                out[label] = dst.read_text(encoding="utf-8")
+        return out
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def validate(diagrams: list[tuple[str, str]]) -> list[tuple[str, str]]:
     """Return [(label, error)] for diagrams that fail to render. Empty = all good."""
     if not diagrams:

@@ -12,7 +12,14 @@ The loop: **probe** for the edge of what the learner knows, **plan** a prerequis
 
 ## The vault
 
-The vault is the folder Claude Code was opened in. Its `CLAUDE.md` sets the note format. The learning files live in `Courses/_learning/`:
+There are two set-ups, and `VL where` says which one is in use (`library` is set only in library mode):
+
+- **A vault:** the folder Claude Code was opened in, laid out like the repository's `vault-template/`. Its `CLAUDE.md` sets the note format. Notes are the nodes.
+- **A connected library** (`/learn:connect`): the learner's own folder of notes, in any structure and format, which is **read-only**. The engine works in a separate state folder (`_learn/` inside the library, or one given by `--state-dir` or `LEARN_STATE_DIR`) that holds `type: card` notes linking back to the learner's files. Cards are the nodes. Never edit, move or rename a library file; teach from the source file the card points to (`source:` and `source_anchor:`), converting it with `VL convert` when it is not plain text.
+
+**Front end.** `frontend:` in `vault-learning.yaml` is `obsidian` (wikilinks `[[Note]]`, Dataview, Obsidian callouts) or `plain` (any editor: relative Markdown links `[Note](Note.md)`, static tables, roadmap images). Write every link in the configured style; the engine reads both.
+
+The learning files live in `Courses/_learning/` (of the vault or the state folder):
 
 | File | What it holds |
 |---|---|
@@ -46,6 +53,10 @@ Every command prints JSON. Global options (`--vault PATH`, `--date YYYY-MM-DD`) 
 - `VL unit <COURSE> all|next|<N>`: the course's teaching units (lectures, weeks or modules), each with its primer and whether it is started; `<N>` adds its nodes, the previous and following units, and its links to other courses.
 - `VL check-primer [<COURSE>|all]`: lint primers against the format below (exit 1 if any fail).
 - `VL index`: regenerate `_meta/Vault Index.md`.
+- `VL where`: the folder in use, its library (library mode) and its front end.
+- `VL convert "<file>" [--render auto|all|none]`: a PDF, Word file, slide deck or saved web page as text, plus page images for scans and for pages whose mathematics the text layer garbles. Read `text_file`, then each image in `images`; formulas are checked against the images. A missing converter returns `error` and an `install` line: pass it on, never guess the content.
+- `VL connect "<folder>"` and `VL library-scan`: library mode set-up, and the state of every library file (new, changed, current, flagged as exercises or exams).
+- `VL review-queue`: rewrite the static Review Queue (plain mode; `roadmap all` also does it).
 
 If a command fails because Python or a package is missing, stop and tell the learner the fix from SETUP.md (`pip install -r "${CLAUDE_PLUGIN_ROOT}/engine/requirements.txt"`). Never compute learner state by hand.
 
@@ -53,12 +64,14 @@ If a command fails because Python or a package is missing, stop and tell the lea
 
 ## Grounding and trust
 
-- **Teach from the vault.** The note for the current node is the reference, together with its linked proof, example and method notes (from `graph`: `proofs`, `examples`, and the note's own links). Read them before teaching the node.
+- **Teach from the vault.** The note for the current node is the reference, together with its linked proof, example and method notes (from `graph`: `proofs`, `examples`, and the note's own links). Read them before teaching the node. In library mode the reference is the card's source file at its `source_anchor` (convert it first if it is not text); the card is only a pointer and a check.
 - **Never contradict a note silently.** If a note looks wrong, stop teaching, quote the exact line, say what you think is wrong and why, and log it to the Error Log with category `note error` (an error in the note, not the learner's). Then carry on only with what is certainly right, or move on.
 - **Mark anything beyond the note** (extra intuition, another angle, a later-course connection) with the words "beyond the notes".
 - **Never invent** results, references, page numbers or numbers. For any computation, run Python (NumPy, SymPy or SciPy) where you can, and check the result before stating it. For proofs, check each step against the note.
 - **Questions:** generated questions are labelled "(generated)" in the session file. Never transcribe textbook or problem-sheet exercises; paraphrase and change the numbers, or cite the exercise by number.
 - **Integrity:** never use past exam papers, their solutions or reserved sample papers as teaching material. They are the learner's own practice material; an Exam Profile may record their style only. Follow the learner's institution's rules on AI use.
+- **Exercise sources are cited, never solved.** A problem sheet, exercise set or past paper (in library mode, any file in `library-scan`'s `integrity_flags` the learner has not cleared) may be cited ("attempt question 3 of Sheet 2 first") but never answered, hinted to the answer, or turned into cards that hold its solutions.
+- **Handwriting and scans:** read the image itself; mark any word or symbol you cannot read as `[?: ...]` and ask, never guess.
 
 ## Primers
 
@@ -91,12 +104,12 @@ The body, at most 250 words not counting the diagram (about five minutes):
 
 1. `**The question:**` the question the unit answers, in one or two sentences.
 2. `## Where it sits`: what the previous unit established, what this one adds, and what the next one builds on it, linking their primers (or MOCs where no primer exists).
-3. `## Key ideas`: a small Mermaid `flowchart` concept map of the three to five key ideas, with short plain labels, edges labelled with the relation and no `internal-link` class; then a numbered list, one line per idea, with `[[wikilinks]]` to the notes behind it.
-4. `## Links to other courses`, only where a link genuinely helps: one line each on what carries over, with wikilinks to existing notes. Start from `external_prereqs` and `used_outside` in `VL unit <COURSE> <N>`, then the notes' own links. A connection no note makes is marked "beyond the notes". Leave the section out if there is none.
+3. `## Key ideas`: a small Mermaid `flowchart` concept map of the three to five key ideas, with short plain labels, edges labelled with the relation and no `internal-link` class; then a numbered list, one line per idea, with links to the notes behind it.
+4. `## Links to other courses`, only where a link genuinely helps: one line each on what carries over, with links to existing notes. Start from `external_prereqs` and `used_outside` in `VL unit <COURSE> <N>`, then the notes' own links. A connection no note makes is marked "beyond the notes". Leave the section out if there is none.
 5. `## Why it matters`: how the course's Exam Profile says this kind of material is examined and marked (style only; say so in one line if the course has no profile), then where it is used beyond the course, only if it genuinely is, marked "beyond the notes" unless a note says it.
-6. `## Before you start`: two or three numbered prerequisite questions (generated) on earlier material the unit depends on, each ending with a wikilink to the note that answers it. No answers in the note.
+6. `## Before you start`: two or three numbered prerequisite questions (generated) on earlier material the unit depends on, each ending with a link to the note that answers it. No answers in the note.
 
-Every wikilink must point to an existing note; never link a note that does not exist. Maths is LaTeX. No em dashes. Link the primer from its module MOC with one line `Overview: [[<primer name>]]` directly under the MOC's intro paragraph, outside the roadmap markers; a module with several units gets one `Lecture overviews:` list there instead. Do not edit a `human_authored: true` MOC: mention the missing link in chat instead.
+Every link must point to an existing note; never link a note that does not exist. Maths is LaTeX. No em dashes. Link the primer from its module MOC with one line `Overview: <link to the primer>` directly under the MOC's intro paragraph, outside the roadmap markers; a module with several units gets one `Lecture overviews:` list there instead. Do not edit a `human_authored: true` MOC: mention the missing link in chat instead.
 
 **In the chat,** in at most ten lines of plain text: the unit's name, the question, where it sits in one line, the key ideas as a numbered list, and the note's path to read it in Obsidian. Then the prerequisite check: the note's two or three questions as multiple choice, with "I don't know" on each. It records nothing, as probing records nothing. It is the wide end of the probe: a right answer lets the probe start inside the unit, and a miss puts that prerequisite into the plan.
 

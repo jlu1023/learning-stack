@@ -20,7 +20,17 @@ extra_courses:
 # What to call a folder-based unit, per course: Lecture, Week, Chapter or Module.
 unit_labels:
   COURSE101: Lecture
+
+# obsidian (default): wikilinks, Dataview, %% markers %%. plain: any editor -
+# Markdown links, HTML-comment markers, roadmap images and static review tables.
+frontend: obsidian
+
+# Library mode: the folder of the learner's own notes, read-only, relative to
+# this file's folder or absolute. Cards and state live in this folder instead.
+library: ".."
 ```
+
+`state_dir` is not read here: it is a pointer, read by `vault.resolve_root`.
 
 The registries below are module-level so the graph helpers can stay plain
 functions; `load` replaces their contents each time a Vault is opened.
@@ -43,9 +53,16 @@ class CourseSpec:
     mixed_cap: int = 0              # most items per `due mixed` draw; 0 means no cap
 
 
+FRONTENDS = ("obsidian", "plain")
+
 REFERENCE_COURSES: set[str] = set()
 EXTRA_COURSES: dict[str, CourseSpec] = {}
 UNIT_LABELS: dict[str, str] = {}
+SETTINGS: dict = {"frontend": "obsidian", "library": None}
+
+
+def plain() -> bool:
+    return SETTINGS["frontend"] == "plain"
 
 
 def load(root: Path) -> dict:
@@ -71,4 +88,10 @@ def load(root: Path) -> dict:
         if label not in LABELS:
             raise ValueError(f"{CONFIG_NAME}: unit label for {code} must be one of {', '.join(LABELS)}")
         UNIT_LABELS[str(code).upper()] = label
+    frontend = str(data.get("frontend") or "obsidian").lower()
+    if frontend not in FRONTENDS:
+        raise ValueError(f"{CONFIG_NAME}: frontend must be one of {', '.join(FRONTENDS)}")
+    SETTINGS["frontend"] = frontend
+    lib = data.get("library")
+    SETTINGS["library"] = (Path(root) / str(lib)).resolve() if lib else None
     return data

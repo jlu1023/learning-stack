@@ -20,3 +20,4 @@ vault-template/Courses/_learning/sessions/*
 vault-template/.obsidian/workspace*
 vault-template/.obsidian/plugins/
 vault-template/.trash/
+.converted/

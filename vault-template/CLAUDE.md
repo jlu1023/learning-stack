@@ -101,6 +101,7 @@ review_interval: 1 | 3 | 7 | 21 | 60
 
 ## Links
 
+- **Style follows `frontend:` in `vault-learning.yaml`.** `obsidian`: wikilinks, `[[Note]]` and `[[Note|text]]`. `plain` (any other editor): relative Markdown links, `[Note](../2%20Module/Note.md)`, with spaces as `%20`; in frontmatter too: `depends_on: ["[Note](Note.md)"]`. The engine resolves both styles, so a vault can switch, but write new links in the configured one.
 - Every concept, theorem and method note has 3 to 6 deliberate outbound wikilinks, at least one `depends_on` or `used_in` entry, and a place in its module MOC.
 - Theorems link to their proof and to every definition in their statement; proofs link back to the theorem and to each result a step relies on; definitions list the theorems that use them under "Used in".
 - **Reports never wikilink.** Logs, session files, the Error Log, roadmaps' suggested order, lint reports and the Vault Index name notes in plain text, so they add no false edges to the graph.

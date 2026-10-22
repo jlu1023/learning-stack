@@ -1,6 +1,6 @@
 {
-  "name": "obsidian-learning-loop",
-  "description": "A Socratic tutor for Obsidian course notes: primers, spaced retrieval quizzes and dependency roadmaps, for Claude Code.",
+  "name": "learning-stack",
+  "description": "A Socratic tutor for your notes in Claude Code: Obsidian vaults or any folder of PDFs, slides and Markdown, with spaced retrieval quizzes and dependency roadmaps.",
   "owner": {
     "name": "James Lu"
   },
@@ -8,7 +8,7 @@
     {
       "name": "learn",
       "source": "./plugin",
-      "description": "A Socratic tutor for your Obsidian course notes, with spaced retrieval quizzes and roadmaps."
+      "description": "A Socratic tutor for your own notes, in Obsidian or any folder: primers, spaced retrieval quizzes, roadmaps."
     }
   ]
 }

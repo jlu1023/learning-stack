@@ -47,7 +47,7 @@ flowchart TD
     class n005 example
 ```
 
-Shapes: rectangle definition, rounded box theorem, hexagon method, stadium concept or intuition, double-sided box proof with no theorem note, slanted box example or evidence (dotted). Fills: grey unseen, amber learning, blue secure, green mastered. Dashed border: outside this module or course. Only nearest prerequisites are drawn: an arrow implied by a longer chain is left out. Click a node to open its note.
+Shapes: rectangle definition, rounded box theorem, hexagon method, stadium concept or intuition, double-sided box proof with no theorem note, slanted box example or evidence (dotted). Fills: grey unseen, amber learning, blue secure, green mastered. Dashed border: outside this module or course. Only nearest prerequisites are drawn: an arrow implied by a longer chain is left out. In Obsidian, click a node to open its note.
 %% roadmap:end %%
 
 ## Definitions

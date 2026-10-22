@@ -17,10 +17,10 @@ from .config import EXTRA_COURSES, REFERENCE_COURSES, CourseSpec
 from .vault import Note, Vault, as_link_list, link_target, owner_label
 
 CORE_TYPES = {"definition", "theorem", "lemma", "method", "concept",
-              "intuition", "axiom", "corollary", "proposition"}
+              "intuition", "axiom", "corollary", "proposition", "card"}
 THEOREM_TYPES = {"theorem", "lemma", "corollary", "proposition"}
 SECTION_RE = re.compile(r"^\s*(\d+(?:\.\d+)*)")
-THEOREM_LINE_RE = re.compile(r"^\*\*Theorem:\*\*\s*\[\[([^\]]+)\]\]", re.M)
+THEOREM_LINE_RE = re.compile(r"^\*\*Theorem:\*\*\s*(\[\[[^\]]+\]\]|\[[^\]\n]*\]\([^)\n]+\))", re.M)
 PART_RE = re.compile(r"\s*\((?:part|Part)\s*[^)]*\)\s*$")
 
 
@@ -155,7 +155,7 @@ class CourseGraph:
             and self._folder(rel) not in self.exclude
 
     def _resolve_one(self, src: str, fld: str, raw: str) -> str | None:
-        hits = self.v.resolve(raw)
+        hits = self.v.resolve_from(src, raw)
         tgt = link_target(raw)
         if not hits:
             self.gaps.missing.append((self.name(src), fld, tgt))
@@ -208,7 +208,7 @@ class CourseGraph:
                 cands += [bare, PART_RE.sub("", bare)]
             attached, external = None, None
             for c in cands:
-                hits = v.resolve(c)
+                hits = v.resolve_from(rel, c)
                 if len(hits) != 1:
                     continue
                 h = hits[0]
@@ -274,15 +274,15 @@ class CourseGraph:
                     continue
                 other = self.note(h)
                 back = {x for r2 in as_link_list(other.fm.get("depends_on"))
-                        for x in self.v.resolve(r2)}
+                        for x in self.v.resolve_from(h, r2)}
                 if rel not in back:
                     self.gaps.used_in_without_depends_on.append((note.name, other.name))
             for raw in as_link_list(note.fm.get("depends_on")):
-                hits = self.v.resolve(raw)
+                hits = self.v.resolve_from(rel, raw)
                 if len(hits) != 1 or not self.in_course(hits[0]) or hits[0] not in self.kind:
                     continue
                 pre = self.note(hits[0])
-                fwd = {x for r2 in as_link_list(pre.fm.get("used_in")) for x in self.v.resolve(r2)}
+                fwd = {x for r2 in as_link_list(pre.fm.get("used_in")) for x in self.v.resolve_from(hits[0], r2)}
                 if rel not in fwd:
                     self.gaps.depends_on_without_used_in += 1
 
@@ -375,12 +375,12 @@ class CourseGraph:
             if self.in_course(rel):
                 continue
             for raw in as_link_list(note.fm.get("depends_on")):
-                hits = self.v.resolve(raw)
+                hits = self.v.resolve_from(rel, raw)
                 if len(hits) == 1 and self.in_course(hits[0]) and hits[0] in self.kind:
                     out[owner_label(rel)][rel].add(self.fold(hits[0]))
         for rel, k in self.kind.items():
             for raw in as_link_list(self.note(rel).fm.get("used_in")):
-                hits = self.v.resolve(raw)
+                hits = self.v.resolve_from(rel, raw)
                 if len(hits) == 1 and not self.in_course(hits[0]):
                     out[owner_label(hits[0])][hits[0]].add(self.fold(rel))
         return out

@@ -16,3 +16,6 @@ Courses/_learning/sessions/*
 # Secrets
 .env
 .env.*
+
+# Converted sources (text and page images), regenerated on demand
+.converted/

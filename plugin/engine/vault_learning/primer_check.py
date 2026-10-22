@@ -6,7 +6,7 @@ import re
 
 from .graph import CourseGraph, roadmap_courses
 from .units import CourseUnits
-from .vault import Vault, link_target
+from .vault import MDLINK_ANY_RE, Vault, link_target
 
 MAX_WORDS = 250
 NAME_RE = re.compile(r"^(?P<code>\S+) (?P<label>Lecture|Week|Module|Chapter) (?P<n>\d+) Overview - .+$")
@@ -36,6 +36,7 @@ def prose_words(body: str) -> int:
     t = MERMAID_RE.sub(" ", body)
     t = re.sub(r"^#.*$", " ", t, flags=re.M)                    # headings
     t = WIKILINK_RE.sub(lambda m: m.group(1).split("|")[-1].split("#")[0], t)
+    t = re.sub(r"!?\[([^\]\n]*)\]\([^)\n]*\)", r"\1", t)         # a Markdown link counts as its text
     t = INLINE_MATH_RE.sub(" M ", t)
     t = re.sub(r"[*_>`|]", " ", t)
     return len([w for w in t.split() if re.search(r"\w", w)])
@@ -78,18 +79,24 @@ def check_primer(v: Vault, rel: str, units: dict[str, CourseUnits]) -> list[str]
         probs.append(f"{words} words (limit {MAX_WORDS})")
     if "—" in v.read_text(rel):
         probs.append("contains an em dash")
-    for raw in WIKILINK_RE.findall(body):
-        hits = v.resolve(raw)
+    links = [f"[[{w}]]" for w in WIKILINK_RE.findall(body)]
+    links += [m.group(0) for m in MDLINK_ANY_RE.finditer(MERMAID_RE.sub(" ", body))
+              if not re.match(r"[a-z]+:", m.group(1))]          # skip http:, mailto: and so on
+    for raw in links:
+        hits = v.resolve_from(rel, raw)
         if len(hits) != 1:
-            probs.append(f"link [[{raw}]] resolves to {len(hits)} notes")
+            probs.append(f"link {raw} resolves to {len(hits)} notes")
         if FORBIDDEN_SOURCE_RE.search(link_target(raw)) and "Exam Profile" not in raw:
-            probs.append(f"links what looks like an exam paper: [[{raw}]]")
+            probs.append(f"links what looks like an exam paper: {raw}")
     for s in fm.get("sources") or []:
         if FORBIDDEN_SOURCE_RE.search(str(s)) and "Exam Profile" not in str(s):
             probs.append(f"source looks like an exam paper: {s}")
     folder = rel.rsplit("/", 1)[0]
     moc = f"{folder}/{folder.rsplit('/', 1)[-1]}.md"
-    if not v.exists(moc) or f"[[{note.name}" not in v.read_text(moc):
+    moc_text = v.read_text(moc) if v.exists(moc) else ""
+    linked = f"[[{note.name}" in moc_text or any(
+        link_target(m.group(0)).rsplit("/", 1)[-1] == note.name for m in MDLINK_ANY_RE.finditer(moc_text))
+    if not linked:
         probs.append("not linked from its module MOC")
     return probs
 
