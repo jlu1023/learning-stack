@@ -340,6 +340,8 @@ def due_items(v: Vault, which: str | None, today: dt.date, limit: int) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="vault_learning", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    from . import __version__
+    ap.add_argument("--version", action="version", version=f"learn engine {__version__}")
     ap.add_argument("--vault", default=None)
     ap.add_argument("--state-dir", default=None, help="library mode: where cards and state live")
     ap.add_argument("--date", default=None, help="YYYY-MM-DD, default today")

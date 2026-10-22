@@ -1,5 +1,7 @@
 # Learning Stack
 
+[![tests](https://github.com/jlu1023/learning-stack/actions/workflows/tests.yml/badge.svg)](https://github.com/jlu1023/learning-stack/actions/workflows/tests.yml)
+
 A **Claude Code plugin** that turns your notes into a Socratic tutor: in an Obsidian vault, or in any folder of PDFs, Markdown or photos of handwritten pages. It gives you a primer before each lecture, teaches one idea at a time from your own material, makes you work every step, quizzes you to lock each idea in, and brings it back on a spaced schedule until you know it. An optional module adds what your lecturer said aloud, from Granola lecture transcripts.
 
 It is for students (and anyone working through a technical course) who want to *learn* their notes, not just store them: mathematics, statistics, economics, finance and other subjects with definitions, results and methods.
@@ -73,7 +75,7 @@ plugin/                           the Claude Code plugin "learn"
   vault-template/                 what /learn:setup copies: CLAUDE.md, templates, learning files, example course
 optional/granola/                 lecture transcripts: plugin setup, template, PRIVACY.md
 docs/                             the README image and a synthetic sample handout to try /learn:ingest on
-SETUP.md  LEARNING-METHOD.md  INTEGRITY.md  THIRD-PARTY.md  LICENSE
+SETUP.md  LEARNING-METHOD.md  INTEGRITY.md  CONTRIBUTING.md  CHANGELOG.md  THIRD-PARTY.md  LICENSE
 ```
 
 ## Credits

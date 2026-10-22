@@ -23,6 +23,6 @@ Set the learner up in the current folder. Keep it short: a few questions, then d
      `{"permissions": {"allow": ["Bash(python3 *vl.py*)", "Bash(python *vl.py*)", "Bash(py *vl.py*)", "PowerShell(python3 *vl.py*)", "PowerShell(python *vl.py*)", "PowerShell(py *vl.py*)"]}}`
      (the patterns end in `*vl.py*` so they match Windows paths with backslashes too).
 
-4. **Existing notes** (this folder or another): hand over to the `connect` skill with the folder (and, for a read-only, shared or synced folder, ask whether to keep the state elsewhere with `--state-dir`). Pass on their editor answer as the frontend. Never write anything into their notes folder except the `_learn/` state folder.
+4. **Existing notes** (this folder or another): read `${CLAUDE_PLUGIN_ROOT}/skills/connect/SKILL.md` and carry out its steps for that folder (the `connect` skill only starts when the learner types it, so follow the file rather than invoking it). For a read-only, shared or synced folder, ask whether to keep the state elsewhere with `--state-dir`. Use their editor answer as the frontend, so connect does not ask again. Never write anything into their notes folder except the `_learn/` state folder.
 
 5. **Optional extras.** Only if `VL doctor` shows them missing and only in one line each, mention what they add: mermaid-cli (diagram checks, roadmap images for editors without Mermaid) and PyYAML (rare YAML forms). Say plainly that neither is needed.

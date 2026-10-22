@@ -6,7 +6,7 @@ argument-hint: <file path | url | pasted content | (empty for Inbox/)>
 
 Process new material into the vault: `$ARGUMENTS`.
 
-In library mode (`VL where` shows a `library`), the learner's files are not copied into notes: use the `connect` skill instead, which builds cards that point back to them.
+In library mode (`VL where` shows a `library`), the learner's files are not copied into notes: stop and tell the learner to run `/learn:connect`, which builds cards that point back to them.
 
 1. **Read the rules.** Read the vault's `CLAUDE.md` (atomic notes, page types, frontmatter, LaTeX, links) and `vault-learning.yaml` (`frontend`: wikilinks for Obsidian, relative Markdown links for plain). Load the `method` skill's Grounding and trust section. `VL` means the engine command in the method skill.
 
