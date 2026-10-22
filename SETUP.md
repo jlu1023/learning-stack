@@ -118,7 +118,7 @@ Then open Claude Code in the state folder for later sessions (its `vault-learnin
 
 ## Permission prompts
 
-Claude Code asks before each engine command. Choose "Yes, and don't ask again", let `/learn:setup` add the rule, or put this in the folder's `.claude/settings.json`:
+Claude Code asks before each engine command. Choose "Yes, and don't ask again" at the first prompt, or add this to the folder's `.claude/settings.json` yourself (the plugin never changes your permission settings):
 
 ```json
 { "permissions": { "allow": [

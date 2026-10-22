@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+- Ready for the plugin directory: `/learn:setup` no longer offers to write Claude Code's permission settings (it explains how to allow the engine instead), and the plugin README says exactly what the plugin runs, writes, reads and sends.
+
 ## 1.2.1
 
 - Every expected failure (an unknown course, an ambiguous note name, a bad `--date`, a broken `vault-learning.yaml`, a refused write) is a JSON error with exit code 2, never a traceback.

@@ -19,9 +19,7 @@ Set the learner up in the current folder. Keep it short: a few questions, then d
      - Obsidian: open this folder with **Open folder as vault**, allow community plugins, and install **Dataview** (for the review tables). Other editors need nothing.
      - To try it: `/learn:primer COURSE101 1`, then `/learn:teach COURSE101`.
      - To add a course: put its slides or notes (PDFs are fine) in `Sources/courses/<CODE>/` and run `/learn:ingest` on a file.
-   - Offer to stop the permission prompt the engine triggers: with their agreement, create `.claude/settings.json` in the vault (or add to it) with
-     `{"permissions": {"allow": ["Bash(python3 *vl.py*)", "Bash(python *vl.py*)", "Bash(py *vl.py*)", "PowerShell(python3 *vl.py*)", "PowerShell(python *vl.py*)", "PowerShell(py *vl.py*)"]}}`
-     (the patterns end in `*vl.py*` so they match Windows paths with backslashes too).
+   - Mention, in one line, that Claude Code asks before each engine command, and that choosing "Yes, and don't ask again" at the first prompt stops that (SETUP.md, Permission prompts, has a rule they can add themselves). Never edit Claude Code's settings or permission files yourself.
 
 4. **Existing notes** (this folder or another): read `${CLAUDE_PLUGIN_ROOT}/skills/connect/SKILL.md` and carry out its steps for that folder (the `connect` skill only starts when the learner types it, so follow the file rather than invoking it). For a read-only, shared or synced folder, ask whether to keep the state elsewhere with `--state-dir`. Use their editor answer as the frontend, so connect does not ask again. Never write anything into their notes folder except the `_learn/` state folder.
 
