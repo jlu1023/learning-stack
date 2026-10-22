@@ -40,7 +40,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-import yaml
+from . import miniyaml as yaml     # PyYAML when installed, else a built-in reader
 
 CONFIG_NAME = "vault-learning.yaml"
 LABELS = ("Lecture", "Week", "Chapter", "Module")

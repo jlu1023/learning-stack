@@ -1,6 +1,6 @@
 ---
 name: ingest
-description: Turn new material into atomic course notes in the vault, from any source - PDF (including scans and maths-heavy pages), Word, PowerPoint, Markdown, photos of handwritten notes, a web page, or a file in Inbox/ - with depends_on links, then regenerate the course roadmap.
+description: Turn new material into atomic course notes in the vault - a PDF (including scans and maths-heavy pages), Markdown, a photo of handwritten notes, a web page or a file in Inbox/ (Word and PowerPoint as PDF) - with depends_on links, then regenerate the course roadmap.
 argument-hint: <file path | url | pasted content | (empty for Inbox/)>
 ---
 
@@ -14,14 +14,15 @@ In library mode (`VL where` shows a `library`), the learner's files are not copi
 
    | Input | How |
    |---|---|
-   | Markdown or text file | Read it. |
-   | PDF, Word (.docx), PowerPoint (.pptx), saved web page (.html) | `VL convert "<path>"`. Read its `text_file`, then **every image in `images`**: those pages are scans, or pages whose mathematics the text layer garbles, so take formulas from the image, not the text. For a short or maths-heavy PDF, `--render all` reads every page as an image. |
-   | Photo or scan of handwritten notes (.png, .jpg) | Read the image directly. Mark any word or symbol you cannot read as `[?: ...]` and ask the learner, never guess. |
+   | Markdown, text or saved web page | Read it. |
+   | PDF | Read it with the Read tool, which shows every page's text and image (over 10 pages, read in ranges with `pages`, at most 20 a call). Take formulas from the page images, not from garbled text; scanned pages have only the image. |
+   | Photo or scan of handwritten notes (.png, .jpg) | Read the image. Mark any word or symbol you cannot read as `[?: ...]` and ask the learner, never guess. |
+   | Word, PowerPoint, Keynote or Pages file | Ask the learner to save it as PDF from the app that made it (File, Save as or Export, PDF), then read the PDF. |
    | URL | Fetch the page, save the readable text to `Sources/web/<title>.md` with its URL and today's date at the top, then work from that file. |
    | Pasted content | Use it directly. |
    | Nothing | List `Inbox/` and process each file in turn, asking before processing more than 3. |
 
-   If `convert` returns an `error` (a missing converter such as pandoc or pypdfium2), give the learner its `install` line and stop for that file. Never write notes from a file you could not read.
+   Never write notes from a file you could not read.
 
 3. **Classify it.** Course material needs a course code, a module and a `section:` (the source's numbered item, or slide and page). Ask if any is unclear. Anything else is a source: one note in `Sources/` with the source template, plus concept notes for its key ideas.
    - **Problem sheets, exercise sets and past papers** are not turned into notes with answers. Exercises are cited ("attempt it first"); past papers may only inform an Exam Profile (style, never questions).

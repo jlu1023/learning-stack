@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import unquote
 
-import yaml
+from . import miniyaml as yaml     # PyYAML when installed, else a built-in reader
 
 from . import config
 
@@ -53,7 +53,7 @@ def resolve_root(vault: str | None = None, state_dir: str | None = None) -> Path
     return here
 
 
-SKIP_DIRS = {".obsidian", ".smart-env", ".git", ".trash", "node_modules", ".claude", ".converted"}
+SKIP_DIRS = {".obsidian", ".smart-env", ".git", ".trash", "node_modules", ".claude"}
 FM_RE = re.compile(r"\A---\r?\n(.*?\r?\n)?---[ \t]*(\r?\n|\Z)", re.S)
 LINK_RE = re.compile(r"\[\[([^\]]+?)\]\]")
 MDLINK_RE = re.compile(r"^\[[^\]\n]*\]\(<?([^)>\n]+?)>?\)$")

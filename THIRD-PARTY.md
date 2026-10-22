@@ -32,10 +32,13 @@ The learning loop itself is Eero Alvar's, from his video "How I Use AI to Learn 
 
 ## Software used, not included
 
-These are installed separately and keep their own licences:
+The engine needs nothing beyond Python's standard library. These optional tools are installed separately and keep their own licences:
 
-- Required: PyYAML (MIT), NetworkX (BSD-3-Clause).
-- Optional converters: pypdfium2 (Apache-2.0 or BSD-3-Clause; bundles PDFium, BSD-3-Clause), Pillow (MIT-CMU), python-pptx (MIT), pandoc (GPL-2.0-or-later, run as a separate program), poppler (GPL, run as a separate program), LibreOffice (MPL-2.0, run as a separate program). PyMuPDF is deliberately not used.
-- Optional: mermaid-cli (MIT), Obsidian and its community plugins (Dataview, LaTeX Suite, Linter, Update Time on Edit, Granola Meetings Simple Sync), and Granola.
+- PyYAML (MIT): used for frontmatter when installed; otherwise a built-in reader is used.
+- mermaid-cli (MIT): diagram checks and roadmap images.
+- Obsidian and its community plugins (Dataview, LaTeX Suite, Linter, Update Time on Edit, Granola Meetings Simple Sync), and Granola.
+- For the test suite only: pytest (MIT), and NetworkX (BSD-3-Clause) and PyYAML, which the parity tests compare the built-in code against.
 
-The sample PDF in `plugin/engine/tests/fixtures/` is synthetic, written for these tests.
+`plugin/engine/vault_learning/digraph.py` follows NetworkX's function names and orderings, so the engine behaves as it did when it used NetworkX; it is written separately and includes no NetworkX code.
+
+The sample PDF in `docs/examples/` is synthetic, written for this repository.

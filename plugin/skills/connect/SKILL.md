@@ -1,6 +1,6 @@
 ---
 name: connect
-description: Bring your own notes - connect an existing folder of notes in any structure (Markdown, PDFs, Word, slides, photos of handwritten notes) without changing it, and build a separate deck of review cards with the same spaced schedule, linking back to the learner's files. Also rescans a connected folder for new or changed files.
+description: Bring your own notes - connect an existing folder of notes in any structure (Markdown, PDFs, photos of handwritten notes; Word and slides saved as PDF) without changing it, and build a separate deck of review cards with the same spaced schedule, linking back to the learner's files. Also rescans a connected folder for new or changed files.
 argument-hint: "[folder] [--state-dir <path>]"
 disable-model-invocation: true
 ---
@@ -24,7 +24,7 @@ Connect `$ARGUMENTS` (default: the current folder) as a read-only library.
    - **Which files to do now.** Large libraries go a few files at a time; say how many cards each file is likely to give.
    - **Flagged files:** list every file in `integrity_flags` and its reason. These look like problem sheets, exercise sets or past papers. Their cards **cite** questions and never hold solutions (step 6). If the learner says a flag is wrong (for example lecture notes titled "Solutions of differential equations"), treat the file as notes.
 
-5. **Read each file.** Use the Read tool for Markdown and text. For PDF, Word, slides and web pages, run `VL convert "<library-relative path>"` and read its `text_file`; read the page images in `images` for any page the manifest marks (scans, or mathematics the text layer garbles), and check formulas against them. Photos of handwritten notes: read the image directly, and mark any word you cannot read as `[?: ...]` and ask about it rather than guessing. If `convert` reports a missing tool, give the learner its `install` line and skip that file.
+5. **Read each file** with the Read tool, as in the method's Reading sources: Markdown and text directly; PDFs page by page (formulas from the page images; over 10 pages, in ranges of at most 20); photos of handwritten notes as images, marking any word you cannot read as `[?: ...]` and asking rather than guessing. Files in the scan's `save_as_pdf` list (Word, PowerPoint, Keynote, Pages) cannot be read directly: ask the learner to save each as a PDF next to the original (it is their folder, so they do this, not you), then rescan.
 
 6. **Write cards.** One card per idea worth recalling (a definition, a result with its conditions, a method, a key example), in the unit's folder in the state folder, using the configured link style:
 

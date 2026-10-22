@@ -10,7 +10,8 @@
   unit COURSE [all|next|N]                           teaching units (lecture, week, module) and their primers (JSON)
   check-primer [COURSE|all] [--no-validate]          lint lecture primers (exit 1 if any fail)
   where                                              the folder in use, its library and front end (JSON)
-  convert FILE [--out DIR] [--render auto|all|none]  a source file as text and page images (JSON manifest)
+  doctor                                             Python, optional extras and what each adds (JSON)
+  init [FOLDER] [--frontend plain] [--no-example]    a new vault from the plugin's template (never overwrites)
   connect LIBRARY [--frontend plain|obsidian]        library mode: create the state folder (LIBRARY/_learn, or --state-dir)
   library-scan                                       library mode: new, changed and flagged files (JSON)
   review-queue [--dry-run]                           plain mode: rewrite the static Review Queue
@@ -34,7 +35,6 @@ from .render import OBSIDIAN_MARKERS, PLAIN_MARKERS, Renderer
 from .state import (LEVELS, apply_result, read_error_log, read_progress,
                     read_state, write_state)
 from . import config
-from .convert import MissingTool, convert, default_out
 from .library import connect as connect_library, scan as library_scan
 from .review_queue import REVIEW_QUEUE_REL, review_queue_text
 from .vault import Vault, parse_frontmatter, resolve_root, set_frontmatter_fields
@@ -166,17 +166,16 @@ def _file_plan(v: Vault, rel: str, text: str) -> tuple[str, str, str]:
 
 
 def _image_plans(v: Vault, exports: list[tuple[str, str]], report: dict) -> list[tuple[str, str, str]]:
-    """Plain mode: each diagram as an SVG beside its note. Without mermaid-cli the
-    Mermaid source is written as .mmd instead (paste it into mermaid.live)."""
+    """Plain mode with mermaid-cli installed: each diagram as an SVG beside its note.
+    (Without mermaid-cli the notes keep plain Mermaid blocks and nothing is exported.)"""
     from .validate import ValidatorUnavailable, render_svgs
     if not exports:
         return []
     try:
         svgs = render_svgs(exports)
     except ValidatorUnavailable as e:
-        report["errors"].append(f"roadmap images need mermaid-cli ({e}); wrote each diagram's "
-                                "Mermaid source as a .mmd file instead")
-        return [_file_plan(v, rel[:-4] + ".mmd", code + "\n") for rel, code in exports]
+        report["errors"].append(f"roadmap images were not drawn: {e}")
+        return []
     missing = [rel for rel, _ in exports if rel not in svgs]
     if missing:
         report["errors"].append(f"{len(missing)} roadmap images did not render: {', '.join(missing)}")
@@ -329,9 +328,10 @@ def main(argv=None) -> int:
     p = sub.add_parser("check-primer"); p.add_argument("course", nargs="?", default="all")
     p.add_argument("--no-validate", action="store_true")
     sub.add_parser("where")
-    p = sub.add_parser("convert"); p.add_argument("file"); p.add_argument("--out", default=None)
-    p.add_argument("--render", choices=["auto", "all", "none"], default="auto")
-    p.add_argument("--dpi", type=int, default=150)
+    sub.add_parser("doctor")
+    p = sub.add_parser("init"); p.add_argument("folder", nargs="?", default=".")
+    p.add_argument("--frontend", choices=list(config.FRONTENDS), default="obsidian")
+    p.add_argument("--no-example", action="store_true")
     sub.add_parser("library-scan")
     p = sub.add_parser("connect"); p.add_argument("library")
     p.add_argument("--frontend", choices=list(config.FRONTENDS), default="plain")
@@ -339,6 +339,15 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
+    if args.cmd == "init":          # creates the vault, so before one is opened
+        from pathlib import Path
+        from .scaffold import init_vault
+        out = init_vault(Path(args.folder), args.frontend, example=not args.no_example)
+        print(json.dumps(out, indent=1, default=str))
+        return 2 if "error" in out else 0
+    if args.cmd == "doctor":        # works even where no vault exists yet
+        print(json.dumps(doctor_json(), indent=1, default=str))
+        return 0
     if args.cmd == "connect":       # the state folder may not exist yet
         from pathlib import Path
         state = Path(args.state_dir) if args.state_dir else Path(args.library) / "_learn"
@@ -354,10 +363,6 @@ def main(argv=None) -> int:
         out = check_all(v, args.course, validate_diagrams=not args.no_validate)
         print(json.dumps(out, indent=1, default=str))
         return 1 if out["failing"] else 0
-    if args.cmd == "convert":
-        out = convert_json(v, args.file, args.out, args.render, args.dpi)
-        print(json.dumps(out, indent=1, default=str))
-        return 2 if "error" in out else 0
     if args.cmd == "where":
         out = {"root": str(v.root.resolve()), "frontend": config.SETTINGS["frontend"],
                "library": str(config.SETTINGS["library"]) if config.SETTINGS["library"] else None,
@@ -387,21 +392,36 @@ def main(argv=None) -> int:
     return 0
 
 
-def convert_json(v: Vault, file: str, out: str | None, render: str = "auto", dpi: int = 150) -> dict:
-    """Convert a file given relative to the current folder, the library or the vault.
-    Output always goes inside the vault (or state folder), never into a library."""
+def doctor_json() -> dict:
+    """What the engine has, and what each optional extra would add. Never fails."""
+    from . import miniyaml, validate
     from pathlib import Path
-    lib = config.SETTINGS["library"]
-    src = next((p for p in (Path(file), *( [lib / file] if lib else []), v.root / file) if p.is_file()), Path(file))
-    dest = Path(out) if out else default_out(v.root, src) if src.is_file() else None
-    if dest is not None and not dest.resolve().is_relative_to(v.root.resolve()):
-        return {"error": f"--out must be inside {v.root}"}
+    root = resolve_root()
+    ok = sys.version_info >= (3, 10)
+    cfg = Path(root) / config.CONFIG_NAME
     try:
-        return convert(src, dest, render, dpi)
-    except MissingTool as e:
-        return {"error": str(e), "missing": e.tool, "install": e.install}
-    except (FileNotFoundError, ValueError, RuntimeError) as e:
-        return {"error": str(e)}
+        settings = (miniyaml.safe_load(cfg.read_text(encoding="utf-8")) or {}) if cfg.is_file() else {}
+    except miniyaml.YAMLError:
+        settings = {}
+    kind = ("library state" if isinstance(settings, dict) and settings.get("library") else
+            "vault" if (Path(root) / "Courses").is_dir() else
+            "neither: run /learn:setup to make a vault here or connect your notes")
+    return {
+        "python": {"version": sys.version.split()[0], "ok": ok,
+                   **({} if ok else {"fix": "install Python 3.10 or later from https://www.python.org"})},
+        "required_packages": "none: the engine uses the standard library only",
+        "folder": {"path": str(root), "settings_file": cfg.is_file(), "looks_like": kind},
+        "optional": [
+            {"name": "PyYAML", "present": miniyaml._pyyaml is not None,
+             "adds": "reads every kind of YAML frontmatter; without it a few rare forms "
+                     "(lists of mappings, anchors) are reported as unreadable",
+             "install": "python3 -m pip install PyYAML"},
+            {"name": "mermaid-cli", "present": validate.available(),
+             "adds": "checks every diagram renders before writing it; in plain mode also saves "
+                     "roadmaps as SVG images for editors that do not draw Mermaid",
+             "install": "npm install -g @mermaid-js/mermaid-cli (needs Node.js)"},
+        ],
+    }
 
 
 def show_json(v: Vault, name: str) -> dict:

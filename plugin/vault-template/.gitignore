@@ -17,5 +17,3 @@ Courses/_learning/sessions/*
 .env
 .env.*
 
-# Converted sources (text and page images), regenerated on demand
-.converted/

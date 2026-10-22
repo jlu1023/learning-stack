@@ -47,6 +47,14 @@ def _mmdc() -> Path:
     raise ValidatorUnavailable("mermaid-cli not installed (see SETUP.md, optional diagram checks)")
 
 
+def available() -> bool:
+    try:
+        _mmdc()
+        return True
+    except ValidatorUnavailable:
+        return False
+
+
 def _puppeteer_config(tmp: Path) -> Path | None:
     """A config pointing at an installed browser, or None to use puppeteer's own."""
     exe = next((b for b in BROWSERS if b and Path(b).is_file()), None)

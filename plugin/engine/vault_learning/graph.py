@@ -11,7 +11,7 @@ import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
-import networkx as nx
+from . import digraph as dg
 
 from .config import EXTRA_COURSES, REFERENCE_COURSES, CourseSpec
 from .vault import Note, Vault, as_link_list, link_target, owner_label
@@ -130,7 +130,7 @@ class CourseGraph:
         self.proofs_for: dict[str, list[str]] = defaultdict(list)
         self.nodes: list[str] = []                  # core + unattached proofs
         self.examples: list[str] = []
-        self.G = nx.DiGraph()                       # in-course, prerequisite -> dependent
+        self.G = dg.DiGraph()                       # in-course, prerequisite -> dependent
         self.ext: dict[str, set[str]] = defaultdict(set)   # node -> external prereq rels
         self.example_anchor: dict[str, set[str]] = defaultdict(set)
         self.example_feeds: dict[str, set[str]] = defaultdict(set)  # example -> dependents
@@ -287,10 +287,10 @@ class CourseGraph:
                     self.gaps.depends_on_without_used_in += 1
 
         # cycles: report, and pick back-edges for drawing only
-        for comp in nx.strongly_connected_components(self.G):
+        for comp in dg.strongly_connected_components(self.G):
             if len(comp) > 1:
                 sub = self.G.subgraph(comp)
-                for cyc in nx.simple_cycles(sub):
+                for cyc in dg.simple_cycles(sub):
                     self.gaps.cycles.append([self.name(x) for x in cyc])
                 order = sorted(comp, key=self.sort_key)
                 pos = {n: i for i, n in enumerate(order)}
@@ -298,7 +298,7 @@ class CourseGraph:
                     if pos[u] >= pos[w]:
                         self.back_edges.add((u, w))
         mg = self.module_graph()
-        for cyc in nx.simple_cycles(mg):
+        for cyc in dg.simple_cycles(mg):
             if len(cyc) > 1:
                 # start at the first module in syllabus order, so the report is stable
                 i = min(range(len(cyc)), key=lambda j: (module_number(cyc[j]), cyc[j]))
@@ -320,7 +320,7 @@ class CourseGraph:
         sk = section_key(note.fm.get("section"))
         return (sk if sk else (10**6,), self._moc_index(rel), self.name(rel).lower())
 
-    def acyclic(self) -> nx.DiGraph:
+    def acyclic(self) -> dg.DiGraph:
         g = self.G.copy()
         g.remove_edges_from(self.back_edges)
         return g
@@ -329,7 +329,7 @@ class CourseGraph:
         g = self.acyclic()
         members = [n for n in self.nodes if self.module_of[n] == folder]
         sub = g.subgraph(members)
-        return list(nx.lexicographical_topological_sort(sub, key=lambda r: self.sort_key(r)))
+        return list(dg.lexicographical_topological_sort(sub, key=lambda r: self.sort_key(r)))
 
     def suggested_order(self) -> list[str]:
         out = []
@@ -338,8 +338,8 @@ class CourseGraph:
         return out
 
     # ---------- summaries ----------
-    def module_graph(self) -> nx.DiGraph:
-        mg = nx.DiGraph()
+    def module_graph(self) -> dg.DiGraph:
+        mg = dg.DiGraph()
         mg.add_nodes_from(m.folder for m in self.modules)
         for u, w in self.G.edges():
             a, b = self.module_of[u], self.module_of[w]
@@ -350,7 +350,7 @@ class CourseGraph:
 
     def dependents_count(self) -> dict[str, int]:
         g = self.acyclic()
-        return {n: len(nx.descendants(g, n)) for n in self.nodes}
+        return {n: len(dg.descendants(g, n)) for n in self.nodes}
 
     def spine(self, lo: int = 10, hi: int = 20, target: int = 15) -> list[tuple[str, int]]:
         counts = self.dependents_count()

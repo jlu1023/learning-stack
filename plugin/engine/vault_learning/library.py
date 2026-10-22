@@ -20,14 +20,28 @@ never hold their solutions.
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import re
 from pathlib import Path
 from urllib.parse import quote
 
 from . import config
-from .convert import SUPPORTED, file_hash
 from .vault import SKIP_DIRS, Vault
+
+# Claude Code reads these itself (PDFs and images page by page, as images)
+READABLE = {".md", ".markdown", ".txt", ".pdf", ".png", ".jpg", ".jpeg", ".webp", ".gif",
+            ".html", ".htm"}
+# listed so the scan can ask for them as PDF (Save as PDF in the app that made them)
+EXPORT_FIRST = {".docx", ".doc", ".pptx", ".ppt", ".odt", ".odp", ".key", ".pages"}
+
+
+def file_hash(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()[:16]
 
 EXERCISE_NAME_RE = re.compile(
     r"(problem[\s_-]*(set|sheet)s?|exercises?|work[\s_-]*sheets?|home[\s_-]*work|\bhw[\s_-]*\d|"
@@ -45,14 +59,6 @@ def _first_text(path: Path, limit: int = 4000) -> str:
     try:
         if ext in (".md", ".markdown", ".txt"):
             return path.read_text(encoding="utf-8", errors="replace")[:limit]
-        if ext == ".pdf":
-            import pypdfium2 as pdfium
-            pdf = pdfium.PdfDocument(str(path))
-            try:
-                tp = pdf[0].get_textpage()
-                return tp.get_text_range()[:limit]
-            finally:
-                pdf.close()
     except Exception:  # noqa: BLE001 - a best-effort hint, never a failure
         return ""
     return ""
@@ -90,11 +96,13 @@ def scan(v: Vault) -> dict:
                              and (d / n).resolve() != state)
         for fn in sorted(filenames):
             p = d / fn
-            if p.suffix.lower() not in SUPPORTED or fn.startswith("."):
+            ext = p.suffix.lower()
+            if ext not in READABLE | EXPORT_FIRST or fn.startswith("."):
                 continue
             rel = p.relative_to(lib).as_posix()
-            files[rel] = {"file": rel, "kind": p.suffix.lower()[1:], "hash": file_hash(p),
-                          "integrity": integrity_flag(p, rel), "href_from_state": state_href(v, rel)}
+            files[rel] = {"file": rel, "kind": ext[1:], "hash": file_hash(p),
+                          "integrity": integrity_flag(p, rel), "href_from_state": state_href(v, rel),
+                          **({"needs": "save as PDF"} if ext in EXPORT_FIRST else {})}
     cards: dict[str, list[dict]] = {}
     orphans, violations = [], []
     for rel, note in v.notes.items():
@@ -122,6 +130,7 @@ def scan(v: Vault) -> dict:
         "files": out_files,
         "counts": {s: sum(1 for f in out_files if f["status"] == s) for s in ("new", "changed", "current")},
         "integrity_flags": [{"file": f["file"], "reason": f["integrity"]} for f in out_files if f["integrity"]],
+        "save_as_pdf": [f["file"] for f in out_files if f.get("needs")],
         "integrity_violations": violations,
         "orphan_cards": orphans,
     }
@@ -165,7 +174,7 @@ human_authored: true
 
 Your own preferences for how you are taught. Empty means the method's defaults apply
 (definition first, examples, consequences, then theorems; three spaced passes; at most
-three ideas per session). The repository's `vault-template/Courses/_learning/Teaching Style.md`
+three ideas per session). The plugin's `vault-template/Courses/_learning/Teaching Style.md`
 has a full version with per-course examples to copy from.
 """,
     "Courses/_learning/Error Log.md": """---

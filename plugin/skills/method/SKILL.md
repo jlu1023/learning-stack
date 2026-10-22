@@ -15,9 +15,9 @@ The loop: **probe** for the edge of what the learner knows, **plan** a prerequis
 There are two set-ups, and `VL where` says which one is in use (`library` is set only in library mode):
 
 - **A vault:** the folder Claude Code was opened in, laid out like the repository's `vault-template/`. Its `CLAUDE.md` sets the note format. Notes are the nodes.
-- **A connected library** (`/learn:connect`): the learner's own folder of notes, in any structure and format, which is **read-only**. The engine works in a separate state folder (`_learn/` inside the library, or one given by `--state-dir` or `LEARN_STATE_DIR`) that holds `type: card` notes linking back to the learner's files. Cards are the nodes. Never edit, move or rename a library file; teach from the source file the card points to (`source:` and `source_anchor:`), converting it with `VL convert` when it is not plain text.
+- **A connected library** (`/learn:connect`): the learner's own folder of notes, in any structure and format, which is **read-only**. The engine works in a separate state folder (`_learn/` inside the library, or one given by `--state-dir` or `LEARN_STATE_DIR`) that holds `type: card` notes linking back to the learner's files. Cards are the nodes. Never edit, move or rename a library file; teach from the source file the card points to (`source:` and `source_anchor:`), read as in Reading sources below.
 
-**Front end.** `frontend:` in `vault-learning.yaml` is `obsidian` (wikilinks `[[Note]]`, Dataview, Obsidian callouts) or `plain` (any editor: relative Markdown links `[Note](Note.md)`, static tables, roadmap images). Write every link in the configured style; the engine reads both.
+**Front end.** `frontend:` in `vault-learning.yaml` is `obsidian` (wikilinks `[[Note]]`, Dataview, Obsidian callouts) or `plain` (any editor: relative Markdown links `[Note](Note.md)`, static review tables). Write every link in the configured style; the engine reads both.
 
 The learning files live in `Courses/_learning/` (of the vault or the state folder):
 
@@ -36,13 +36,13 @@ Each course may also have `Courses/<CODE>/<CODE> Exam Profile.md`: how the cours
 
 ## Tools
 
-The engine computes the graph, the order and the learner state. `VL` in these skills means running, from the vault folder:
+The engine computes the graph, the order and the learner state. It is plain Python 3.10 or later and needs no packages. `VL` in these skills means running, from the vault folder:
 
 ```
-python "${CLAUDE_PLUGIN_ROOT}/engine/vl.py" <command> ...
+python3 "${CLAUDE_PLUGIN_ROOT}/engine/vl.py" <command> ...
 ```
 
-Every command prints JSON. Global options (`--vault PATH`, `--date YYYY-MM-DD`) go before the command.
+On Windows use `py -3` in place of `python3` (Windows often has a `python3` that only prints "Python was not found"). If the command you tried fails or says Python was not found, try the others (`python3`, `python`, `py -3`), and keep whichever works for the rest of the session. Every command prints JSON. Global options (`--vault PATH`, `--state-dir PATH`, `--date YYYY-MM-DD`) go before the command.
 
 - `VL graph <COURSE>`: every node in suggested order, with `prereqs`, `external_prereqs`, `dependents`, `proofs`, `examples`, `lecture`, `unit` and `state`. Use it to probe and plan.
 - `VL next <COURSE>`: the next node to teach.
@@ -54,17 +54,27 @@ Every command prints JSON. Global options (`--vault PATH`, `--date YYYY-MM-DD`) 
 - `VL check-primer [<COURSE>|all]`: lint primers against the format below (exit 1 if any fail).
 - `VL index`: regenerate `_meta/Vault Index.md`.
 - `VL where`: the folder in use, its library (library mode) and its front end.
-- `VL convert "<file>" [--render auto|all|none]`: a PDF, Word file, slide deck or saved web page as text, plus page images for scans and for pages whose mathematics the text layer garbles. Read `text_file`, then each image in `images`; formulas are checked against the images. A missing converter returns `error` and an `install` line: pass it on, never guess the content.
-- `VL connect "<folder>"` and `VL library-scan`: library mode set-up, and the state of every library file (new, changed, current, flagged as exercises or exams).
+- `VL connect "<folder>"` and `VL library-scan`: library mode set-up, and the state of every library file (new, changed, current, flagged as exercises or exams, or to be saved as PDF).
 - `VL review-queue`: rewrite the static Review Queue (plain mode; `roadmap all` also does it).
+- `VL doctor`: the Python version, the folder in use, and which optional extras are present and what each adds.
 
-If a command fails because Python or a package is missing, stop and tell the learner the fix from SETUP.md (`pip install -r "${CLAUDE_PLUGIN_ROOT}/engine/requirements.txt"`). Never compute learner state by hand.
+If no Python works, or a command fails unexpectedly, run `VL doctor` (or tell the learner to install Python 3.10 or later from python.org) and pass on its advice. Never compute learner state by hand.
+
+## Reading sources
+
+Claude Code reads sources itself; nothing needs installing.
+
+- **Markdown, text, saved web pages:** the Read tool.
+- **PDFs:** the Read tool, which shows each page's text and image. For a PDF over 10 pages, read it in ranges with `pages` (at most 20 pages a call). Take formulas from the page images, not from any garbled text.
+- **Photos and scans of handwritten notes:** the Read tool shows the image; mark any word or symbol you cannot read as `[?: ...]` and ask.
+- **Web pages:** fetch them.
+- **Word, PowerPoint, Keynote, Pages:** ask the learner to save the file as PDF from the app that made it (File, Save as or Export, PDF) and read that. Never guess a file's content you could not read.
 
 `confidence:` in note frontmatter is not learner state. Never read it, never write it.
 
 ## Grounding and trust
 
-- **Teach from the vault.** The note for the current node is the reference, together with its linked proof, example and method notes (from `graph`: `proofs`, `examples`, and the note's own links). Read them before teaching the node. In library mode the reference is the card's source file at its `source_anchor` (convert it first if it is not text); the card is only a pointer and a check.
+- **Teach from the vault.** The note for the current node is the reference, together with its linked proof, example and method notes (from `graph`: `proofs`, `examples`, and the note's own links). Read them before teaching the node. In library mode the reference is the card's source file at its `source_anchor` (read as in Reading sources); the card is only a pointer and a check.
 - **Never contradict a note silently.** If a note looks wrong, stop teaching, quote the exact line, say what you think is wrong and why, and log it to the Error Log with category `note error` (an error in the note, not the learner's). Then carry on only with what is certainly right, or move on.
 - **Mark anything beyond the note** (extra intuition, another angle, a later-course connection) with the words "beyond the notes".
 - **Never invent** results, references, page numbers or numbers. For any computation, run Python (NumPy, SymPy or SciPy) where you can, and check the result before stating it. For proofs, check each step against the note.

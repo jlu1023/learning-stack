@@ -64,24 +64,36 @@ def test_make_link_follows_the_frontend(vault):
     assert make_link("Courses/A/x.md", "Courses/B/Some Note.md") == "[Some Note](../B/Some%20Note.md)"
 
 
-def test_plain_roadmap_uses_html_markers_images_and_no_obsidian_classes(vault):
+def test_plain_roadmap_without_mermaid_cli_keeps_mermaid_blocks_quietly(vault, monkeypatch):
+    from vault_learning import validate
+    monkeypatch.setattr(validate, "available", lambda: False)
     v = Vault(_plain(vault))
     report, code = roadmap_report(v, "all", TODAY, no_validate=True)
-    assert code == 0
+    assert code == 0 and report["errors"] == []
     moc = (vault / "Courses/XX201/1 Basics/1 Basics.md").read_text(encoding="utf-8")
     assert "<!-- roadmap:start -->" in moc and "%% roadmap" not in moc
     assert "internal-link" not in moc
-    assert "![1 Basics roadmap](1%20Basics%20Roadmap.svg)" in moc
+    assert "```mermaid" in moc and ".svg" not in moc
     course = (vault / "Courses/XX201/XX201 Syllabus.md").read_text(encoding="utf-8")
     assert "Roadmap: [XX201 Roadmap](XX201%20Roadmap.md)" in course
     roadmap = (vault / "Courses/XX201/XX201 Roadmap.md").read_text(encoding="utf-8")
-    assert "-file:Roadmap" not in roadmap and "XX201%20Roadmap%20-%20Course%20map.svg" in roadmap
-    # either SVGs (mermaid-cli present) or .mmd sources with a clear error
-    imgs = list((vault / "Courses/XX201").rglob("*.svg")) + list((vault / "Courses/XX201").rglob("*.mmd"))
-    assert imgs
-    if not list((vault / "Courses/XX201").rglob("*.svg")):
-        assert any("mermaid-cli" in e for e in report["errors"])
+    assert "-file:Roadmap" not in roadmap
+    assert not list((vault / "Courses").rglob("*.svg")) and not list((vault / "Courses").rglob("*.mmd"))
     assert (vault / REVIEW_QUEUE_REL).exists()
+
+
+def test_plain_roadmap_with_mermaid_cli_exports_svg_images(vault):
+    from vault_learning import validate
+    if not validate.available():
+        pytest.skip("mermaid-cli not installed")
+    v = Vault(_plain(vault))
+    report, code = roadmap_report(v, "all", TODAY, no_validate=True)
+    assert code == 0 and report["errors"] == []
+    moc = (vault / "Courses/XX201/1 Basics/1 Basics.md").read_text(encoding="utf-8")
+    assert "![1 Basics roadmap](1%20Basics%20Roadmap.svg)" in moc and "```mermaid" in moc
+    assert (vault / "Courses/XX201/1 Basics/1 Basics Roadmap.svg").read_text(encoding="utf-8").lstrip().startswith("<svg")
+    roadmap = (vault / "Courses/XX201/XX201 Roadmap.md").read_text(encoding="utf-8")
+    assert "XX201%20Roadmap%20-%20Course%20map.svg" in roadmap
 
 
 def test_old_obsidian_markers_are_replaced_in_place():

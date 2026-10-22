@@ -1,5 +1,0 @@
-# Optional converters for /learn:ingest and /learn:connect (all free).
-# pandoc (Word, HTML) and LibreOffice (slide images) are separate installs: see SETUP.md.
-pypdfium2>=4.0
-pillow>=10.0
-python-pptx>=1.0

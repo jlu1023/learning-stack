@@ -1,1 +1,5 @@
+# The engine needs no packages. For the test suite:
 pytest>=8.0
+# optional: the parity tests compare the built-in graph and YAML code with these
+networkx>=3.0
+PyYAML>=6.0

@@ -8,9 +8,8 @@ import pytest
 
 from vault_learning import config
 from vault_learning.cli import due_items, main, record_json
-from vault_learning.convert import file_hash
 from vault_learning.graph import CourseGraph
-from vault_learning.library import connect, integrity_flag, scan
+from vault_learning.library import connect, file_hash, integrity_flag, scan
 from vault_learning.vault import Vault, resolve_root
 
 from .conftest import write
@@ -23,8 +22,8 @@ def _library(root: Path) -> Path:
     write(lib, "Term 1/Probability/week 2 conditional.md", "# Conditional probability\n\nP(A|B) = P(A and B)/P(B).\n")
     write(lib, "Term 1/Problem Sheet 1.md", "# Sheet 1\n\n1. Show that P(empty set) = 0. [3 marks]\n")
     write(lib, "random/ideas.txt", "Answer all questions. Time allowed: 2 hours.\n")
-    (lib / "Term 1" / "Probability" / "slides.pdf").write_bytes(
-        (Path(__file__).parent / "fixtures" / "sample-lecture.pdf").read_bytes())
+    (lib / "Term 1" / "Probability" / "slides.pdf").write_bytes(b"%PDF-1.4 a stand-in\n")
+    (lib / "Term 1" / "Probability" / "week 3.pptx").write_bytes(b"PK a stand-in")
     return lib
 
 
@@ -111,6 +110,7 @@ def test_scan_reports_new_changed_current_orphans_and_integrity(tmp_path):
     assert [x["card"].rsplit("/", 1)[-1] for x in out["integrity_violations"]] == ["Leaked Solution.md"]
     assert out["orphan_cards"][0]["source"] == "deleted.md"
     assert by["Term 1/Probability/slides.pdf"]["href_from_state"] == "../Term%201/Probability/slides.pdf"
+    assert out["save_as_pdf"] == ["Term 1/Probability/week 3.pptx"] and "needs" not in by["Term 1/Probability/slides.pdf"]
 
 
 def test_integrity_flag_by_name_and_by_text(tmp_path):
@@ -143,4 +143,4 @@ def test_cli_connect_and_scan(tmp_path, capsys, monkeypatch):
     monkeypatch.delenv("LEARN_STATE_DIR", raising=False)
     assert main(["connect", "."]) == 0
     assert main(["library-scan"]) == 0
-    assert '"new": 5' in capsys.readouterr().out
+    assert '"new": 6' in capsys.readouterr().out

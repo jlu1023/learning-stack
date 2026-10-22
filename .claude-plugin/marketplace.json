@@ -1,6 +1,6 @@
 {
   "name": "learning-stack",
-  "description": "A Socratic tutor for your notes in Claude Code: Obsidian vaults or any folder of PDFs, slides and Markdown, with spaced retrieval quizzes and dependency roadmaps.",
+  "description": "A Socratic tutor for your notes in Claude Code: Obsidian vaults or any folder of PDFs and Markdown, with spaced retrieval quizzes and dependency roadmaps. Needs only Python.",
   "owner": {
     "name": "James Lu"
   },

@@ -120,6 +120,7 @@ class Renderer:
         self.progress = read_progress(self.v)
         self._state: dict[str, State] = {}
         self.exports: list[tuple[str, str]] = []      # (vault-relative .svg path, diagram), plain mode
+        self.images: bool | None = None               # export SVGs? decided on first diagram
 
     def state(self, rel: str) -> State:
         if rel not in self._state:
@@ -174,12 +175,12 @@ class Renderer:
         """Draws the transitive reduction: an arrow implied by a longer chain is
         omitted, so each note shows only its nearest prerequisites. External
         prerequisites and examples take part in the reduction too."""
-        import networkx as nx
+        from . import digraph as dg
         cg = self.cg
         d = Diagram("TD")
         ms = set(members)
         acyc = cg.acyclic()
-        H = nx.DiGraph()
+        H = dg.DiGraph()
         H.add_nodes_from(members)
         role: dict[str, str] = {}
         for r in members:
@@ -202,9 +203,9 @@ class Renderer:
                 H.add_edge(e, f); dotted.add((e, f))
             if anchors or feeds:
                 role[e] = "example"
-        if nx.is_directed_acyclic_graph(H):
-            R = nx.transitive_reduction(H)
-            gens = list(nx.topological_generations(H))
+        if dg.is_directed_acyclic_graph(H):
+            R = dg.transitive_reduction(H)
+            gens = list(dg.topological_generations(H))
             # Obsidian scales a diagram to the pane width: a wide, shallow graph
             # reads better laid out left to right (tall and narrow).
             if max(len(g) for g in gens) > 1.5 * len(gens):
@@ -241,14 +242,14 @@ class Renderer:
     def course_diagram(self) -> str:
         """Modules only, transitive reduction of the module dependencies; the
         full list with counts is printed under the diagram."""
-        import networkx as nx
+        from . import digraph as dg
         cg = self.cg
         d = Diagram("TD")
         mg = cg.module_graph()
         for m in cg.modules:
             click = m.moc_rel is not None and self.v.is_unique_name(m.folder)
             d.node(m.folder, m.folder, "module", None, ["module"], click)
-        R = nx.transitive_reduction(mg) if nx.is_directed_acyclic_graph(mg) else mg
+        R = dg.transitive_reduction(mg) if dg.is_directed_acyclic_graph(mg) else mg
         mod_cycle_edges = {(c[i], c[(i + 1) % len(c)]) for c in cg.gaps.module_cycles for i in range(len(c))}
         pos = {m.folder: i for i, m in enumerate(cg.modules)}
         for a, b in sorted(R.edges(), key=lambda e: (pos[e[0]], pos[e[1]])):
@@ -257,21 +258,21 @@ class Renderer:
         return d.render()
 
     def spine_diagram(self, spine: list[tuple[str, int]]) -> str:
-        import networkx as nx
+        from . import digraph as dg
         cg = self.cg
         d = Diagram("TD")
         keep = [n for n, _ in spine]
         for n in keep:
             self.add_note(d, n)
         g = cg.acyclic()
-        reach = nx.DiGraph()
+        reach = dg.DiGraph()
         reach.add_nodes_from(keep)
         for a in keep:
-            desc = nx.descendants(g, a)
+            desc = dg.descendants(g, a)
             for b in keep:
                 if b in desc:
                     reach.add_edge(a, b)
-        red = nx.transitive_reduction(reach)
+        red = dg.transitive_reduction(reach)
         for a, b in sorted(red.edges(), key=lambda e: (cg.sort_key(e[0]), cg.sort_key(e[1]))):
             d.edge(d.ids[a], d.ids[b])
         return d.render()
@@ -479,9 +480,13 @@ class Renderer:
         return "\n".join([start, f"Roadmap: {link} (generated dependency map, suggested order and data gaps).", end])
 
     def diagram_md(self, note_rel: str, svg_rel: str, alt: str, diagram: str) -> list[str]:
-        """A diagram as Markdown lines. Obsidian renders Mermaid itself; elsewhere the
-        diagram is exported as an SVG beside the note, with its source kept below."""
-        if not config.plain():
+        """A diagram as Markdown lines: a Mermaid block, which Obsidian, GitHub and many
+        editors draw themselves. In plain mode with mermaid-cli installed it is also
+        exported as an SVG beside the note, for editors that do not draw Mermaid."""
+        if self.images is None:
+            from .validate import available
+            self.images = config.plain() and available()
+        if not self.images:
             return ["```mermaid", diagram, "```", ""]
         self.exports.append((svg_rel, diagram))
         img = make_link(note_rel, svg_rel, alt)
