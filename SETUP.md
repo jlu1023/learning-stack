@@ -121,8 +121,13 @@ Then open Claude Code in the state folder for later sessions (its `vault-learnin
 Claude Code asks before each engine command. Choose "Yes, and don't ask again", let `/learn:setup` add the rule, or put this in the folder's `.claude/settings.json`:
 
 ```json
-{ "permissions": { "allow": ["Bash(python3 *engine/vl.py*)", "Bash(python *engine/vl.py*)", "Bash(py *engine/vl.py*)"] } }
+{ "permissions": { "allow": [
+  "Bash(python3 *vl.py*)", "Bash(python *vl.py*)", "Bash(py *vl.py*)",
+  "PowerShell(python3 *vl.py*)", "PowerShell(python *vl.py*)", "PowerShell(py *vl.py*)"
+] } }
 ```
+
+The patterns end in `*vl.py*` rather than a full path so they also match Windows paths written with backslashes; the PowerShell forms cover Windows sessions that run commands through PowerShell.
 
 ## Optional extras
 

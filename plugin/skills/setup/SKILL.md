@@ -20,7 +20,8 @@ Set the learner up in the current folder. Keep it short: a few questions, then d
      - To try it: `/learn:primer COURSE101 1`, then `/learn:teach COURSE101`.
      - To add a course: put its slides or notes (PDFs are fine) in `Sources/courses/<CODE>/` and run `/learn:ingest` on a file.
    - Offer to stop the permission prompt the engine triggers: with their agreement, create `.claude/settings.json` in the vault (or add to it) with
-     `{"permissions": {"allow": ["Bash(python3 *engine/vl.py*)", "Bash(python *engine/vl.py*)", "Bash(py *engine/vl.py*)"]}}`.
+     `{"permissions": {"allow": ["Bash(python3 *vl.py*)", "Bash(python *vl.py*)", "Bash(py *vl.py*)", "PowerShell(python3 *vl.py*)", "PowerShell(python *vl.py*)", "PowerShell(py *vl.py*)"]}}`
+     (the patterns end in `*vl.py*` so they match Windows paths with backslashes too).
 
 4. **Existing notes** (this folder or another): hand over to the `connect` skill with the folder (and, for a read-only, shared or synced folder, ask whether to keep the state elsewhere with `--state-dir`). Pass on their editor answer as the frontend. Never write anything into their notes folder except the `_learn/` state folder.
 
