@@ -7,7 +7,7 @@ About 15 minutes. You need [Claude Code](https://code.claude.com) and Python 3.1
 Copy `vault-template/` to wherever you want your vault, and give it a name. For example:
 
 ```bash
-git clone https://github.com/<owner>/learning-stack.git
+git clone https://github.com/jlu1023/learning-stack.git
 cp -r learning-stack/vault-template ~/Study      # Windows: xcopy /E /I learning-stack\vault-template %USERPROFILE%\Study
 ```
 
@@ -64,7 +64,7 @@ claude
 Then add this repository as a plugin marketplace and install the plugin:
 
 ```
-/plugin marketplace add <owner>/learning-stack
+/plugin marketplace add jlu1023/learning-stack
 /plugin install learn@learning-stack
 ```
 

@@ -7,6 +7,6 @@ It needs Python with PyYAML and networkx for the engine in `engine/` (plus the o
 Install:
 
 ```
-/plugin marketplace add <owner>/learning-stack
+/plugin marketplace add jlu1023/learning-stack
 /plugin install learn@learning-stack
 ```

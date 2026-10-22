@@ -38,7 +38,7 @@ Behind the skills is a small Python engine that keeps the learner state (`unseen
 2. In Claude Code:
 
    ```
-   /plugin marketplace add <owner>/learning-stack
+   /plugin marketplace add jlu1023/learning-stack
    /plugin install learn@learning-stack
    ```
 
