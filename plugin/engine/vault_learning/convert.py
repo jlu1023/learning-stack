@@ -162,11 +162,16 @@ def _pandoc(src: Path, out: Path, fmt: str) -> dict:
     exe = _which("pandoc")
     if not exe:
         raise MissingTool("pandoc", f"Reading a {fmt.upper()} file")
-    proc = subprocess.run([exe, str(src), "-f", fmt, "-t", "markdown-raw_html-native_divs-native_spans",
-                           "--wrap=none", f"--extract-media={out / 'media'}", "-o", str(out / "text.md")],
-                          capture_output=True)
+    # pipe tables and plain image links read cleanly in any editor; run in `out`
+    # so extracted images are linked by a relative path (media/...)
+    to = ("markdown-raw_html-native_divs-native_spans-fenced_divs-simple_tables-multiline_tables"
+          "-grid_tables-link_attributes")
+    proc = subprocess.run([exe, str(src.resolve()), "-f", fmt, "-t", to, "--wrap=none",
+                           "--extract-media=.", "-o", "text.md"], capture_output=True, cwd=out)
     if proc.returncode != 0:
         raise RuntimeError(f"pandoc failed: {proc.stderr.decode('utf-8', 'replace').strip()[:300]}")
+    md = out / "text.md"
+    md.write_text(md.read_text(encoding="utf-8").replace("](./media/", "](media/"), encoding="utf-8")
     media = sorted(p.relative_to(out).as_posix() for p in (out / "media").rglob("*") if p.is_file()) \
         if (out / "media").exists() else []
     return {"backend": "pandoc", "media": media, "warnings": []}

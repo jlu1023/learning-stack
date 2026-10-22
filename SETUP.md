@@ -52,7 +52,7 @@ python -m pip install -r <path-to-repo>/plugin/engine/requirements-ingest.txt   
 
 Photos of handwritten notes and Markdown need nothing: Claude reads them directly.
 
-Word (.docx) conversion needs pandoc and is untested on Windows so far.
+Word (.docx) conversion needs pandoc; it is tested on Windows with pandoc 3.12 (equations come out as LaTeX, tables as Markdown tables, images as files beside the text).
 
 ## 4. Install the plugin in Claude Code
 

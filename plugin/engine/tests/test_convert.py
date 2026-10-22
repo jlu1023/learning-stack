@@ -65,12 +65,23 @@ def test_missing_pandoc_is_a_clear_error(tmp_path, monkeypatch):
 def test_docx_with_pandoc(tmp_path):
     if not shutil.which("pandoc"):
         pytest.skip("pandoc not installed")
-    md = tmp_path / "in.md"
-    md.write_text("# Week 1\n\nA **definition** with $x^2$.\n", encoding="utf-8")
     import subprocess
-    subprocess.run(["pandoc", str(md), "-o", str(tmp_path / "w.docx")], check=True)
+    md = tmp_path / "in.md"
+    md.write_text("# Week 1\n\nA **definition** with $x^2 \\leq 1$.\n\n| Law | Mean |\n|---|---|\n"
+                  "| Uniform(0, 1) | 1/2 |\n", encoding="utf-8")
+    try:                                   # an image, when Pillow is there to draw one
+        from PIL import Image
+        Image.new("RGB", (8, 8), "white").save(tmp_path / "fig.png")
+        md.write_text(md.read_text(encoding="utf-8") + "\n![fig](fig.png)\n", encoding="utf-8")
+    except ImportError:
+        pass
+    subprocess.run(["pandoc", "in.md", "-o", "w.docx"], check=True, cwd=tmp_path)   # Word equations (OMML)
     m = cv.convert(tmp_path / "w.docx", tmp_path / "out")
-    assert "definition" in Path(m["text_file"]).read_text(encoding="utf-8")
+    text = Path(m["text_file"]).read_text(encoding="utf-8")
+    assert "definition" in text and "x^{2} \\leq 1" in text            # the equation comes back as LaTeX
+    assert "| Uniform(0, 1) | 1/2 |" in text.replace("  ", " ")         # a pipe table, not a padded one
+    for rel in m["media"]:                                              # images linked relatively, files kept
+        assert rel.startswith("media/") and (tmp_path / "out" / rel).exists() and f"]({rel})" in text
 
 
 def test_pptx_slide_text_and_notes(tmp_path):
