@@ -16,7 +16,7 @@ Run a teaching session for `$ARGUMENTS`.
    - a note name: that node.
    - `resume` (with or without a course): find the most recent session file in `Courses/_learning/sessions/` with `status: open` (for that course if one is given). Read its plan, its per-node log, its `stopped_at` node and rung, and its last exchanges, plus any Error Log entries from that session. Recap in at most three lines (where they stopped, what passed, what failed), then skip the warm-up and the probe for nodes that session already confirmed, and continue from the recorded node and rung. Keep writing to the same session file. If no open session exists, say so and fall back to `next`.
 
-3. **Week ahead, then warm-up.** If this is the first `teach` or `quiz` run of a new week, give the week-ahead overview first (method, Week ahead). Then the warm-up: run `VL due mixed --limit 6` and ask 2 or 3 retrieval questions from the due items and redos, mixed across courses, with **no course or topic labels shown**. Use the confidence-then-verdict flow, then `VL record "<node>" --result pass|fail` for each. If nothing is due, say so in one line and skip.
+3. **Week ahead, then warm-up.** If this is the first `teach` or `quiz` run of a new week, give the week-ahead overview first (method, Week ahead). Then the warm-up: run `VL due mixed --limit 6` and ask 2 or 3 retrieval questions from the due items and redos (only 2 while the learner has unstarted units whose lectures have happened: method, Learn first when behind), mixed across courses, with **no course or topic labels shown**. Use the confidence-then-verdict flow, then `VL record "<node>" --result pass|fail` for each. If nothing is due, say so in one line and skip.
 
 4. **Primer for a new unit.** Take the first node the target resolves to and its `unit` from `VL graph <COURSE>`, then run `VL unit <COURSE> <unit>`. If `started` is false, give the unit's primer per the method (Primers): show the saved primer, or write it first if there is none and run `VL check-primer <COURSE>` until it passes; give the short chat version; run its prerequisite check. Skip this step for `resume`, `deepen` and pass 2 candidates, and when `started` is true. When later in the session a planned node opens another unstarted unit, give that unit's primer before teaching the node.
 
@@ -38,7 +38,7 @@ Run a teaching session for `$ARGUMENTS`.
    - Teach concrete before symbolic, make them generate, use the hint ladder, point at the first broken line, enforce the restatement, and ask one hypothesis question per theorem.
    - Run the lock-in quiz: 3 questions, confidence first, then the pass rule.
    - On a pass, run `VL record "<node>" --result pass` and advance.
-   - On a fail, run `VL record "<node>" --result fail`, then stay, re-teach smaller, or insert the missing prerequisite first. Never advance after a fail.
+   - On a fail, stay: re-teach a smaller step, or insert the missing prerequisite first, then retry once. If the retry also fails, run `VL record "<node>" --result fail` and move on to the next node: it comes back tomorrow, and only a second fail in a row drops its level.
    - Append each node's log to the session file as you go, so an abrupt end loses nothing. After every turn, keep the frontmatter `stopped_at` current: the node and the ladder rung reached (for example `stopped_at: "Boole's Inequality, rung 3"`).
 
 8. **Close** on `stop`, or when the plan is done:

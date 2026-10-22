@@ -187,8 +187,8 @@ type: reference
 
 # Progress store for human-authored notes
 
-| Note | Path | mastery | mastery_since | last_quizzed | review | review_interval |
-|---|---|---|---|---|---|---|
+| Note | Path | mastery | mastery_since | last_quizzed | review | review_interval | fail_streak |
+|---|---|---|---|---|---|---|---|
 """,
     "Courses/_learning/sessions/.gitkeep": "",
     "_meta/log.md": "# Operation log\n",

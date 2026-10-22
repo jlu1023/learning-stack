@@ -48,7 +48,7 @@ Every command prints JSON. Global options (`--vault PATH`, `--date YYYY-MM-DD`) 
 - `VL next <COURSE>`: the next node to teach.
 - `VL due mixed` or `VL due <COURSE>`, optionally `--limit N`: due reviews and due Error Log redos.
 - `VL show "<Note Name>"`: one note's learner state.
-- `VL record "<Note Name>" --result pass|fail`: apply a lock-in or review result. **This is the only way learner state is written.** Never hand-edit `mastery`, `mastery_since`, `last_quizzed`, `review` or `review_interval`. It writes the note's frontmatter, or `progress.md` for a `human_authored: true` note, and never bumps `updated:`.
+- `VL record "<Note Name>" --result pass|fail`: apply a lock-in or review result. **This is the only way learner state is written.** Never hand-edit `mastery`, `mastery_since`, `last_quizzed`, `review`, `review_interval` or `fail_streak`. It writes the note's frontmatter, or `progress.md` for a `human_authored: true` note, and never bumps `updated:`.
 - `VL roadmap <COURSE|all>`: regenerate the roadmap, which refreshes the mastery colours.
 - `VL unit <COURSE> all|next|<N>`: the course's teaching units (lectures, weeks or modules), each with its primer and whether it is started; `<N>` adds its nodes, the previous and following units, and its links to other courses.
 - `VL check-primer [<COURSE>|all]`: lint primers against the format below (exit 1 if any fail).
@@ -160,9 +160,11 @@ The Learner Profile may list the learner's recurring error patterns (for example
 
 **Confidence first.** After each answer and before the verdict, ask for confidence 1 to 5. Record it. A confident wrong answer (4 or 5, wrong) is flagged explicitly as **overconfidence** and logged.
 
-**Pass rule:** at least 2 of 3 correct, including at least one non-recall question, **and** a precise statement of the node (every hypothesis, correct quantifiers). Anything else is a fail.
+**Pass rule:** at least 2 of 3 correct, including at least one non-recall question, **and** a statement of the node with every hypothesis and the quantifiers in the right order. Anything else is a fail.
 
-**On a fail:** never move on. Stay on the node and re-teach a smaller step. If the failure traces to a prerequisite (check the node's `prereqs` and `external_prereqs` in `graph`), insert that prerequisite into the plan first, teach it and lock it in, then return. Record a fail.
+**Lenient marking.** Slips that do not change the meaning are pointed out in one line but do not fail a statement or an answer: wording, notation (a domain arrow, a variable name), $<$ for $\leq$ where the note allows either, an arithmetic slip in otherwise right working. A missing or wrong hypothesis, a quantifier in the wrong order, or a wrong method still fails.
+
+**On a fail:** stay on the node and re-teach a smaller step, then retry once. If the failure traces to a prerequisite (check the node's `prereqs` and `external_prereqs` in `graph`), insert that prerequisite into the plan first, teach it and lock it in, then return. If the retry also fails, record a fail and move on: the node comes back the next day, and only a second fail in a row drops its level.
 
 **On a pass:** record a pass, then move to the next node in the plan.
 
@@ -174,7 +176,8 @@ These are implemented by `record`; they are stated here so the rules are visible
 - `learning` becomes `secure` on a pass at least 3 days after reaching `learning`.
 - `secure` becomes `mastered` on a pass at least 21 days after reaching `secure`.
 - Review intervals climb one rung per pass: 1, 3, 7, 21, then 60 days.
-- Any fail resets the interval to 1 day and drops the state by one level.
+- Any fail resets the interval to 1 day. The level drops by one only on the **second fail in a row** (`fail_streak` reaches 2, then restarts at 0); a single fail keeps the level. A pass resets `fail_streak` to 0.
+- **Learn first when behind.** The order of importance is: be familiar with the concepts, learn them, then quiz them. While any unit whose lectures have already happened is not started (`VL unit <COURSE> all`), new learning comes first: `teach` keeps its warm-up to 2 questions and spends the session on unstarted units, and a plan or "what next" suggestion puts `teach` on the backlog ahead of `quiz`. Overdue reviews stay due and are cleared once the backlog is, or whenever the learner asks for `quiz`.
 - **Every `teach` session opens with 2 or 3 warm-up retrieval questions** from `VL due mixed`, mixed across courses, with **no course, module or topic labels shown**: not in the question, the options or the preamble. Reveal the node name only after the verdict. Each warm-up counts as a review: record pass or fail.
 
 ## Logging

@@ -6,6 +6,7 @@ Fields (note frontmatter, or the progress store for human_authored notes):
   last_quizzed     ISO date of the last lock-in or review attempt
   review           ISO date of the next review (the schema's existing field)
   review_interval  days, current rung of the 1, 3, 7, 21, 60 ladder
+  fail_streak      consecutive fails since the last pass or level drop (missing = 0)
 
 `updated:` is never bumped by a learner-state write: it means the content changed.
 """
@@ -21,7 +22,8 @@ LEVELS = ["unseen", "learning", "secure", "mastered"]
 LADDER = [1, 3, 7, 21, 60]
 SECURE_AFTER_DAYS = 3
 MASTERED_AFTER_DAYS = 21
-FIELDS = ["mastery", "mastery_since", "last_quizzed", "review", "review_interval"]
+FAILS_TO_DROP = 2   # consecutive fails before the level drops
+FIELDS = ["mastery", "mastery_since", "last_quizzed", "review", "review_interval", "fail_streak"]
 LEARNING_DIR = "Courses/_learning"
 PROGRESS_REL = f"{LEARNING_DIR}/progress.md"
 ERROR_LOG_REL = f"{LEARNING_DIR}/Error Log.md"
@@ -45,6 +47,7 @@ class State:
     last_quizzed: dt.date | None = None
     review: dt.date | None = None
     review_interval: int | None = None
+    fail_streak: int = 0
 
     @classmethod
     def from_mapping(cls, d: dict) -> "State":
@@ -56,8 +59,12 @@ class State:
             ri = int(ri) if ri not in (None, "") else None
         except (TypeError, ValueError):
             ri = None
+        try:
+            fs = max(int(d.get("fail_streak") or 0), 0)
+        except (TypeError, ValueError):
+            fs = 0
         return cls(m, _date(d.get("mastery_since")), _date(d.get("last_quizzed")),
-                   _date(d.get("review")), ri)
+                   _date(d.get("review")), ri, fs)
 
     def to_fields(self) -> dict:
         return {
@@ -66,6 +73,8 @@ class State:
             "last_quizzed": self.last_quizzed.isoformat() if self.last_quizzed else "",
             "review": self.review.isoformat() if self.review else "",
             "review_interval": self.review_interval if self.review_interval else "",
+            # always written (0 included) so a reset clears an earlier streak
+            "fail_streak": self.fail_streak,
         }
 
     def to_json(self) -> dict:
@@ -79,6 +88,7 @@ def apply_result(s: State, passed: bool, today: dt.date) -> State:
     n = State(**asdict(s))
     n.last_quizzed = today
     if passed:
+        n.fail_streak = 0
         if s.mastery == "unseen":
             n.mastery, n.mastery_since, n.review_interval = "learning", today, LADDER[0]
         else:
@@ -91,16 +101,22 @@ def apply_result(s: State, passed: bool, today: dt.date) -> State:
             higher = [x for x in LADDER if x > cur]
             n.review_interval = higher[0] if higher else LADDER[-1]
     else:
-        if lvl > 0:
-            n.mastery, n.mastery_since = LEVELS[lvl - 1], today
+        # one fail brings the node back tomorrow; only a second fail in a row drops the level
+        n.fail_streak = s.fail_streak + 1
+        if n.fail_streak >= FAILS_TO_DROP:
+            if lvl > 0:
+                n.mastery, n.mastery_since = LEVELS[lvl - 1], today
+            n.fail_streak = 0
         n.review_interval = LADDER[0]
     n.review = today + dt.timedelta(days=n.review_interval)
     return n
 
 
 # ---------- progress store (human_authored notes) ----------
-PROGRESS_HEADER = ("| Note | Path | mastery | mastery_since | last_quizzed | review | review_interval |\n"
-                   "|---|---|---|---|---|---|---|\n")
+PROGRESS_HEADER = ("| Note | Path | mastery | mastery_since | last_quizzed | review | review_interval | fail_streak |\n"
+                   "|---|---|---|---|---|---|---|---|\n")
+# rows written before fail_streak existed have 7 cells; they read as fail_streak 0
+PROGRESS_CELLS = (7, 8)
 
 
 def read_progress(v: Vault) -> dict[str, State]:
@@ -109,7 +125,7 @@ def read_progress(v: Vault) -> dict[str, State]:
     out = {}
     for line in v.read_text(PROGRESS_REL).splitlines():
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) != 7 or cells[0] in ("Note", "---") or set(cells[0]) <= {"-"}:
+        if len(cells) not in PROGRESS_CELLS or cells[0] in ("Note", "---") or set(cells[0]) <= {"-"}:
             continue
         out[cells[1]] = State.from_mapping(dict(zip(FIELDS, cells[2:])))
     return out
@@ -123,7 +139,7 @@ def write_progress_row(v: Vault, rel: str, s: State) -> None:
     lines = text.splitlines()
     for i, line in enumerate(lines):
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) == 7 and cells[1] == rel:
+        if len(cells) in PROGRESS_CELLS and cells[1] == rel:
             lines[i] = row
             break
     else:

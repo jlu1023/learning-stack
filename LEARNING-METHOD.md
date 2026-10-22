@@ -35,7 +35,7 @@ Each note carries a `mastery` level and a `review` date, written only by the eng
 - `learning` becomes `secure` on a pass at least 3 days later.
 - `secure` becomes `mastered` on a pass at least 21 days after that.
 - Each pass moves the next review one rung up: 1, 3, 7, 21, then 60 days.
-- Any fail drops one level and resets the interval to 1 day.
+- Any fail resets the interval to 1 day. One fail keeps the level, so a bad day costs only an early review; a second fail in a row drops one level.
 
 The rungs are a practical schedule, not an optimum: the best gap depends on how long you need to remember something (Cepeda and others, 2008, found it grows with the retention interval). If you want a different ladder, change `LADDER` in `plugin/engine/vault_learning/state.py`.
 

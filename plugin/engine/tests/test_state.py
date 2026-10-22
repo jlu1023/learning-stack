@@ -35,11 +35,32 @@ def test_ladder_tops_out_at_60():
     assert s.review_interval == 60 and s.review == day(120)
 
 
-def test_fail_resets_interval_and_drops_one_level():
+def test_one_fail_resets_interval_but_keeps_the_level():
     s = apply_result(State("secure", D, D, D, 21), False, day(21))
-    assert (s.mastery, s.review_interval, s.review, s.mastery_since) == ("learning", 1, day(22), day(21))
-    s = apply_result(State(), False, D)                # unseen cannot drop further
-    assert s.mastery == "unseen" and s.review == day(1)
+    assert (s.mastery, s.review_interval, s.review, s.mastery_since, s.fail_streak) == \
+        ("secure", 1, day(22), D, 1)
+
+
+def test_second_fail_in_a_row_drops_one_level_and_clears_the_streak():
+    s = apply_result(State("secure", D, D, D, 21), False, day(21))
+    s = apply_result(s, False, day(22))
+    assert (s.mastery, s.review_interval, s.review, s.mastery_since, s.fail_streak) == \
+        ("learning", 1, day(23), day(22), 0)
+    s = apply_result(s, False, day(23))                # a fresh streak: no second drop yet
+    assert s.mastery == "learning" and s.fail_streak == 1
+
+
+def test_a_pass_between_fails_breaks_the_streak():
+    s = apply_result(State("secure", day(14), day(14), day(21), 7), False, day(21))
+    s = apply_result(s, True, day(22))
+    assert s.fail_streak == 0 and s.mastery == "secure"
+    s = apply_result(s, False, day(25))
+    assert s.mastery == "secure" and s.fail_streak == 1
+
+
+def test_unseen_cannot_drop_further():
+    s = apply_result(apply_result(State(), False, D), False, day(1))
+    assert s.mastery == "unseen" and s.fail_streak == 0 and s.review == day(2)
 
 
 def test_state_parsing_is_lenient():

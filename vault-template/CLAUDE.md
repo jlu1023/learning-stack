@@ -79,6 +79,7 @@ mastery_since: YYYY-MM-DD
 last_quizzed: YYYY-MM-DD
 review: YYYY-MM-DD
 review_interval: 1 | 3 | 7 | 21 | 60
+fail_streak: 0 | 1                               # consecutive fails; the second in a row drops a level
 ```
 
 - Written only by the engine's `record` command (the `teach` and `quiz` skills call it), never by hand, and never in bulk.
