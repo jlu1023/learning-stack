@@ -4,7 +4,7 @@ import datetime as dt
 import pytest
 
 from vault_learning import config
-from vault_learning.cli import _find_note, due_items
+from vault_learning.cli import EngineError, _find_note, due_items
 from vault_learning.graph import CourseGraph, canonical_code, roadmap_courses
 from vault_learning.units import CourseUnits
 from vault_learning.vault import Vault, owner_label
@@ -128,7 +128,7 @@ def test_registered_course_graph_paths_modules_and_exclusions(reading):
 def test_find_note_accepts_registered_course_notes_only(reading):
     v = Vault(reading)
     assert _find_note(v, "Argument") == "Library/Reading/1 Logic/Argument.md"
-    with pytest.raises(SystemExit):
+    with pytest.raises(EngineError):
         _find_note(v, "Outline Method")                      # excluded folder: not a course note
 
 

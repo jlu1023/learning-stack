@@ -1,6 +1,6 @@
 # Learning vault: schema for Claude Code
 
-This vault holds course notes in small linked pieces, plus the learner's progress. The `learn` plugin's skills (`/learn:teach`, `/learn:quiz`, `/learn:primer`, `/learn:roadmap`, `/learn:ingest`, `/learn:lecture`, `/learn:query`, `/learn:lint`) work on it. This file sets how notes are written; the plugin's `method` skill sets how teaching works.
+This vault holds course notes in small linked pieces, plus the learner's progress. The `learn` plugin's skills (`/learn:setup`, `/learn:teach`, `/learn:quiz`, `/learn:primer`, `/learn:roadmap`, `/learn:ingest`, `/learn:connect`, `/learn:lecture`, `/learn:query`, `/learn:lint`) work on it. This file sets how notes are written; the plugin's `method` skill sets how teaching works.
 
 ## Hard rules
 

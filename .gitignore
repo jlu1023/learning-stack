@@ -11,12 +11,3 @@ node_modules/
 # Secrets
 .env
 .env.*
-
-# If you use plugin/vault-template/ itself as your vault, keep your material out of git
-plugin/vault-template/Sources/*
-!plugin/vault-template/Sources/README.md
-plugin/vault-template/Courses/_learning/sessions/*
-!plugin/vault-template/Courses/_learning/sessions/.gitkeep
-plugin/vault-template/.obsidian/workspace*
-plugin/vault-template/.obsidian/plugins/
-plugin/vault-template/.trash/

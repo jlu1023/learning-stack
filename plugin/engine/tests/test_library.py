@@ -1,7 +1,6 @@
 """Library mode: a read-only folder of the learner's own notes, with cards and
 state kept in a separate state folder."""
 import hashlib
-import os
 from pathlib import Path
 
 import pytest

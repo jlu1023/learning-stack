@@ -145,7 +145,7 @@ def test_due_lists_reviews_and_error_log_redos(vault, capsys):
         "# Error Log\n\n- [date:: 2025-09-21] [course:: XX201] [node:: Alpha] [category:: algebra] [redo:: 2025-09-26] note\n"
         "- [date:: 2025-09-22] [course:: XX201] [node:: Beta] [category:: logic] [redo:: 2025-09-26] [redone:: 2025-09-27] x\n",
         encoding="utf-8")
-    rc = cli.main(["--vault", str(vault), "--date", "2025-10-02", "due", "mixed"])
+    assert cli.main(["--vault", str(vault), "--date", "2025-10-02", "due", "mixed"]) == 0
     out = json.loads(capsys.readouterr().out)
     assert [d["name"] for d in out["due"]] == ["Alpha"]
     assert [r["node"] for r in out["redos"]] == ["Alpha"]

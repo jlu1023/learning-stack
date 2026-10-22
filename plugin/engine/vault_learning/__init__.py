@@ -1,3 +1,3 @@
 """vault-learning: course roadmaps and learner state for an Obsidian learning vault."""
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"

@@ -26,6 +26,7 @@ import argparse
 import datetime as dt
 import json
 import sys
+from pathlib import Path
 
 from .graph import CourseGraph, canonical_code, course_moc_rel, course_spec, in_any_course, roadmap_courses
 from .index import write_index
@@ -34,7 +35,7 @@ from .units import CourseUnits
 from .render import OBSIDIAN_MARKERS, PLAIN_MARKERS, Renderer
 from .state import (LEVELS, apply_result, read_error_log, read_progress,
                     read_state, write_state)
-from . import config
+from . import config, miniyaml
 from .library import connect as connect_library, scan as library_scan
 from .review_queue import REVIEW_QUEUE_REL, review_queue_text
 from .vault import Vault, parse_frontmatter, resolve_root, set_frontmatter_fields
@@ -198,17 +199,35 @@ def _moc_plan(v: Vault, rel: str, block: str, today: dt.date, report: dict):
     return (rel, bump_updated(new, today), f"markers {action}")
 
 
+# ---------- errors ----------
+class EngineError(Exception):
+    """An expected failure: main prints {"error": ..., **extra} as JSON and exits 2."""
+
+    def __init__(self, error: str, **extra):
+        super().__init__(error)
+        self.payload = {"error": error, **extra}
+
+
+def _course(v: Vault, code: str) -> str:
+    """The course code, or an EngineError naming the courses that exist."""
+    known = roadmap_courses(v)
+    if code not in known:
+        raise EngineError(f"no course '{code}' (a course needs Courses/{code}/{code} Syllabus.md)",
+                          courses=known)
+    return code
+
+
 # ---------- state commands ----------
 def _find_note(v: Vault, name: str) -> str:
     hits = v.resolve(name)
     hits = [h for h in hits if in_any_course(h)]
     if len(hits) != 1:
-        raise SystemExit(json.dumps({"error": f"'{name}' matches {len(hits)} course notes", "matches": hits}))
+        raise EngineError(f"'{name}' matches {len(hits)} course notes", matches=hits)
     return hits[0]
 
 
 def graph_json(v: Vault, code: str) -> dict:
-    cg = CourseGraph(v, code)
+    cg = CourseGraph(v, _course(v, code))
     progress = read_progress(v)
     order = cg.suggested_order()
     pos = {n: i for i, n in enumerate(order)}
@@ -253,7 +272,7 @@ def next_node(v: Vault, code: str) -> dict:
 
 
 def unit_json(v: Vault, code: str, which: str) -> dict:
-    cu = CourseUnits(v, code)
+    cu = CourseUnits(v, _course(v, code))
     if which == "all":
         return cu.summary()
     if which == "next":
@@ -263,13 +282,13 @@ def unit_json(v: Vault, code: str, which: str) -> dict:
                     "reason": "no next node" if nxt is None else f"'{nxt['name']}' has no unit"}
         return {"next_node": nxt["name"], **cu.detail(nxt["unit"])}
     if not which.isdigit():
-        raise SystemExit(json.dumps({"error": f"unit must be all, next or a number, not '{which}'"}))
+        raise EngineError(f"unit must be all, next or a number, not '{which}'")
     return cu.detail(int(which))
 
 
 def due_items(v: Vault, which: str | None, today: dt.date, limit: int) -> dict:
     mixed = which in (None, "mixed", "all")
-    courses = roadmap_courses(v) if mixed else [canonical_code(which)]
+    courses = roadmap_courses(v) if mixed else [_course(v, canonical_code(which))]
     progress = read_progress(v)
     errors = read_error_log(v)
     err_count = {}
@@ -300,11 +319,22 @@ def due_items(v: Vault, which: str | None, today: dt.date, limit: int) -> dict:
                 continue
             kept.append(it)
         items = kept
-    redos = [e for e in errors if e.get("redo") and not e.get("redone")
-             and dt.date.fromisoformat(e["redo"][:10]) <= today
-             and (mixed or e.get("course", "").upper() == which.upper())]
-    return {"date": today.isoformat(), "due": items[:limit] if limit else items,
-            "due_total": len(items), "capped": capped, "redos": redos}
+    redos, problems = [], []
+    for e in errors:
+        if not e.get("redo") or e.get("redone"):
+            continue
+        try:
+            when = dt.date.fromisoformat(e["redo"][:10])
+        except ValueError:          # a hand-typed line: report it, keep going
+            problems.append(f"{e.get('node', '?')}: redo date '{e['redo']}' is not YYYY-MM-DD")
+            continue
+        if when <= today and (mixed or e.get("course", "").upper() == which.upper()):
+            redos.append(e)
+    out = {"date": today.isoformat(), "due": items[:limit] if limit else items,
+           "due_total": len(items), "capped": capped, "redos": redos}
+    if problems:
+        out["error_log_problems"] = problems
+    return out
 
 
 def main(argv=None) -> int:
@@ -339,8 +369,20 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
+    try:
+        return _run(args)
+    except EngineError as e:
+        out = e.payload
+    except miniyaml.YAMLError as e:
+        out = {"error": f"could not read YAML: {e}"}
+    except (PermissionError, ValueError, OSError, UnicodeDecodeError) as e:
+        out = {"error": f"{type(e).__name__}: {e}"}
+    print(json.dumps(out, indent=1, default=str))
+    return 2
+
+
+def _run(args) -> int:
     if args.cmd == "init":          # creates the vault, so before one is opened
-        from pathlib import Path
         from .scaffold import init_vault
         out = init_vault(Path(args.folder), args.frontend, example=not args.no_example)
         print(json.dumps(out, indent=1, default=str))
@@ -349,13 +391,15 @@ def main(argv=None) -> int:
         print(json.dumps(doctor_json(), indent=1, default=str))
         return 0
     if args.cmd == "connect":       # the state folder may not exist yet
-        from pathlib import Path
         state = Path(args.state_dir) if args.state_dir else Path(args.library) / "_learn"
         out = connect_library(Path(args.library), state, args.frontend)
         print(json.dumps(out, indent=1, default=str))
         return 2 if "error" in out else 0
     v = Vault(resolve_root(args.vault, args.state_dir))
-    today = dt.date.fromisoformat(args.date) if args.date else dt.date.today()
+    try:
+        today = dt.date.fromisoformat(args.date) if args.date else dt.date.today()
+    except ValueError:
+        raise EngineError(f"--date must be YYYY-MM-DD, not '{args.date}'") from None
 
     if args.cmd == "roadmap":
         return cmd_roadmap(args, v, today)
@@ -379,7 +423,7 @@ def main(argv=None) -> int:
     elif args.cmd == "graph":
         out = graph_json(v, canonical_code(args.course))
     elif args.cmd == "next":
-        out = next_node(v, canonical_code(args.course))
+        out = next_node(v, _course(v, canonical_code(args.course)))
     elif args.cmd == "unit":
         out = unit_json(v, canonical_code(args.course), args.which)
     elif args.cmd == "due":
@@ -394,9 +438,12 @@ def main(argv=None) -> int:
 
 def doctor_json() -> dict:
     """What the engine has, and what each optional extra would add. Never fails."""
-    from . import miniyaml, validate
-    from pathlib import Path
-    root = resolve_root()
+    from . import validate
+    problem = None
+    try:
+        root = resolve_root()
+    except (miniyaml.YAMLError, OSError) as e:
+        root, problem = Path.cwd(), f"{config.CONFIG_NAME} here could not be read: {e}"
     ok = sys.version_info >= (3, 10)
     cfg = Path(root) / config.CONFIG_NAME
     try:
@@ -410,7 +457,8 @@ def doctor_json() -> dict:
         "python": {"version": sys.version.split()[0], "ok": ok,
                    **({} if ok else {"fix": "install Python 3.10 or later from https://www.python.org"})},
         "required_packages": "none: the engine uses the standard library only",
-        "folder": {"path": str(root), "settings_file": cfg.is_file(), "looks_like": kind},
+        "folder": {"path": str(root), "settings_file": cfg.is_file(), "looks_like": kind,
+                   **({"problem": problem} if problem else {})},
         "optional": [
             {"name": "PyYAML", "present": miniyaml._pyyaml is not None,
              "adds": "reads every kind of YAML frontmatter; without it a few rare forms "

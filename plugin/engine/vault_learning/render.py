@@ -474,7 +474,6 @@ class Renderer:
         return "\n".join(L), diagrams
 
     def course_moc_block(self) -> str:
-        code = self.cg.code
         start, end = markers()
         link = make_link(self.cg.course_moc, self.cg.roadmap_rel)
         return "\n".join([start, f"Roadmap: {link} (generated dependency map, suggested order and data gaps).", end])

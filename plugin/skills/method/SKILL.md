@@ -14,7 +14,7 @@ The loop: **probe** for the edge of what the learner knows, **plan** a prerequis
 
 There are two set-ups, and `VL where` says which one is in use (`library` is set only in library mode):
 
-- **A vault:** the folder Claude Code was opened in, laid out like the repository's `vault-template/`. Its `CLAUDE.md` sets the note format. Notes are the nodes.
+- **A vault:** the folder Claude Code was opened in, laid out like the plugin's `vault-template/` (`/learn:setup` copies it). Its `CLAUDE.md` sets the note format. Notes are the nodes.
 - **A connected library** (`/learn:connect`): the learner's own folder of notes, in any structure and format, which is **read-only**. The engine works in a separate state folder (`_learn/` inside the library, or one given by `--state-dir` or `LEARN_STATE_DIR`) that holds `type: card` notes linking back to the learner's files. Cards are the nodes. Never edit, move or rename a library file; teach from the source file the card points to (`source:` and `source_anchor:`), read as in Reading sources below.
 
 **Front end.** `frontend:` in `vault-learning.yaml` is `obsidian` (wikilinks `[[Note]]`, Dataview, Obsidian callouts) or `plain` (any editor: relative Markdown links `[Note](Note.md)`, static review tables). Write every link in the configured style; the engine reads both.
@@ -57,6 +57,7 @@ On Windows use `py -3` in place of `python3` (Windows often has a `python3` that
 - `VL connect "<folder>"` and `VL library-scan`: library mode set-up, and the state of every library file (new, changed, current, flagged as exercises or exams, or to be saved as PDF).
 - `VL review-queue`: rewrite the static Review Queue (plain mode; `roadmap all` also does it).
 - `VL doctor`: the Python version, the folder in use, and which optional extras are present and what each adds.
+- `VL init [<folder>] [--frontend plain] [--no-example]`: a new vault from the plugin's template; never overwrites a file (the `setup` skill runs it).
 
 If no Python works, or a command fails unexpectedly, run `VL doctor` (or tell the learner to install Python 3.10 or later from python.org) and pass on its advice. Never compute learner state by hand.
 

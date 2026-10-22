@@ -70,7 +70,10 @@ def load(root: Path) -> dict:
     p = Path(root) / CONFIG_NAME
     data = {}
     if p.is_file():
-        data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        try:
+            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError as e:
+            raise ValueError(f"{CONFIG_NAME} could not be read: {e}") from None
         if not isinstance(data, dict):
             raise ValueError(f"{CONFIG_NAME} is not a mapping")
     REFERENCE_COURSES.clear()

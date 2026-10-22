@@ -1,9 +1,8 @@
 """Validate Mermaid diagrams by rendering them with mermaid-cli (mmdc).
 
 Optional: without mermaid-cli the engine still works and reports the diagrams
-as unchecked. It looks for mmdc in $VL_MERMAID_DIR, then in engine/mermaid
-(`npm install` there, with PUPPETEER_SKIP_DOWNLOAD=1 to reuse an installed
-Chrome or Edge), then on PATH (`npm install -g @mermaid-js/mermaid-cli`).
+as unchecked. It looks for mmdc on PATH (`npm install -g @mermaid-js/mermaid-cli`),
+or in a local install named by $VL_MERMAID_DIR (a folder holding node_modules).
 All diagrams render in one browser launch; on failure each is rendered alone
 to name the offender.
 """
@@ -16,9 +15,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
 MMDC_DIRS = [Path(os.environ["VL_MERMAID_DIR"])] if os.environ.get("VL_MERMAID_DIR") else []
-MMDC_DIRS.append(ROOT / "mermaid")
 BROWSERS = [
     os.environ.get("CHROME_PATH", ""),
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",

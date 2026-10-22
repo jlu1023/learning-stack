@@ -132,6 +132,9 @@ def read_progress(v: Vault) -> dict[str, State]:
 
 
 def write_progress_row(v: Vault, rel: str, s: State) -> None:
+    if not v.exists(PROGRESS_REL):      # first human-authored note: start the store
+        v.write_text(PROGRESS_REL, "---\ntitle: \"progress\"\ntype: reference\n---\n\n"
+                                   "# Progress store for human-authored notes\n\n" + PROGRESS_HEADER)
     text = v.read_text(PROGRESS_REL)
     f = s.to_fields()
     name = rel.rsplit("/", 1)[-1][:-3]

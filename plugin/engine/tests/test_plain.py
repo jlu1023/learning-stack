@@ -3,7 +3,6 @@ import datetime as dt
 
 import pytest
 
-from vault_learning import config
 from vault_learning.cli import replace_block, roadmap_report
 from vault_learning.graph import CourseGraph
 from vault_learning.primer_check import check_all
