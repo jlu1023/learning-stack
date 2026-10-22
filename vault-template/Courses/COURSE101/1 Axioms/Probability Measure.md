@@ -2,14 +2,14 @@
 title: "Probability Measure"
 type: definition
 course: COURSE101
-module: "Probability Spaces"
+module: "Axioms"
 section: "1.1"
 lecture: 1
 created: 2026-01-01
 updated: 2026-01-01
 status: growing
 depends_on: ["[[Set Operations]]"]
-used_in: ["[[Inclusion-Exclusion for Two Events]]", "[[Proof - Inclusion-Exclusion for Two Events]]", "[[Complement Counting]]"]
+used_in: ["[[Inclusion-Exclusion]]", "[[Proof - Inclusion-Exclusion]]", "[[Complement Counting]]"]
 examinable: true
 ---
 
@@ -32,9 +32,9 @@ examinable: true
 - A non-example: $m(A) = 1$ for every non-empty $A$ fails axiom 3, since $m(\{1\} \cup \{2\}) = 1 \neq m(\{1\}) + m(\{2\}) = 2$.
 
 ## Used in
-- [[Inclusion-Exclusion for Two Events]]
+- [[Inclusion-Exclusion]]
 - [[Complement Counting]]
 
 ## Related
 - Built on: [[Set Operations]]
-- See also: [[Example - At Least One Six in Four Rolls]]
+- See also: [[Example - At Least One Six]]

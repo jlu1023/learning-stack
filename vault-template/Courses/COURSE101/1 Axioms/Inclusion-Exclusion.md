@@ -1,8 +1,8 @@
 ---
-title: "Inclusion-Exclusion for Two Events"
+title: "Inclusion-Exclusion"
 type: theorem
 course: COURSE101
-module: "Probability Spaces"
+module: "Axioms"
 section: "1.2"
 lecture: 1
 created: 2026-01-01
@@ -13,7 +13,7 @@ used_in: []
 examinable: true
 ---
 
-# Inclusion-Exclusion for Two Events
+# Inclusion-Exclusion
 
 > [!theorem]
 > For any probability measure $P$ and any events $A, B \in \mathcal{F}$,
@@ -24,7 +24,7 @@ examinable: true
 - [[Set Operations]] (splitting a union into disjoint pieces)
 
 ## Proof
-See [[Proof - Inclusion-Exclusion for Two Events]].
+See [[Proof - Inclusion-Exclusion]].
 
 ## Intuition
 - Adding $P(A)$ and $P(B)$ counts the overlap $A \cap B$ twice, so subtract it once.

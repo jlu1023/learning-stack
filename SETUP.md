@@ -70,6 +70,8 @@ Then add this repository as a plugin marketplace and install the plugin:
 /plugin install learn@learning-stack
 ```
 
+**Windows: "Filename too long".** Adding the marketplace clones this repository, and Windows limits paths to 260 characters by default. From a normal user folder the longest path stays well under that, but if your Claude config folder is unusually deep, run `git config --global core.longpaths true` and add the marketplace again.
+
 Restart Claude Code if it asks. The skills appear as `/learn:teach`, `/learn:quiz`, `/learn:primer`, `/learn:roadmap`, `/learn:ingest`, `/learn:connect`, `/learn:lecture`, `/learn:query` and `/learn:lint`.
 
 To avoid a permission prompt every time a skill runs the engine, allow it once when asked ("Yes, and don't ask again"), or add this to the vault's `.claude/settings.json`:

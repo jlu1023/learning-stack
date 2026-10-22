@@ -83,15 +83,15 @@ A primer gives the big picture of a **unit** before any of its nodes is taught: 
 
 **Sources.** Build primers from the vault notes, lecture slides and textbook only. The course's Exam Profile may be used for exam style, never for a question's substance.
 
-**The note.** `<CODE> <Unit> Overview - <Title>.md` (for example `COURSE101 Lecture 1 Overview - Probability Spaces.md`), in the module folder that holds most of the unit's nodes:
+**The note.** `<CODE> <Unit> Overview - <Title>.md` (for example `COURSE101 Lecture 1 Overview - Axioms.md`), in the module folder that holds most of the unit's nodes:
 
 ```
 ---
-title: "COURSE101 Lecture 1 Overview - Probability Spaces"
+title: "COURSE101 Lecture 1 Overview - Axioms"
 type: moc
 primer: true
 course: COURSE101
-module: "Probability Spaces"
+module: "Axioms"
 unit: 1
 sources: ["[[COURSE101 Lecture Notes]]"]
 created: YYYY-MM-DD
@@ -215,7 +215,7 @@ The body holds the plan as a small Mermaid diagram (plain labels, no `internal-l
 
 **Learner Profile:** append dated observations (pace, recurring confusions, what worked) under "Observations". If the profile has `human_authored: true`, do not edit it; mention the observation in chat instead.
 
-**Operation log:** append one line per run to `_meta/log.md` under a day-month-year heading, for example `teach | COURSE101 Probability Spaces: 2 passed, 1 failed, 2 errors logged`.
+**Operation log:** append one line per run to `_meta/log.md` under a day-month-year heading, for example `teach | COURSE101 Axioms: 2 passed, 1 failed, 2 errors logged`.
 
 ## Tone
 

@@ -16,6 +16,6 @@ Roadmap: [[COURSE101 Roadmap]] (generated dependency map, suggested order and da
 %% roadmap:end %%
 
 ## Modules
-1. [[1 Probability Spaces]]
+1. [[1 Axioms]]
 
 Earlier material it builds on: [[Set Operations]] (from the reference course PRE100).

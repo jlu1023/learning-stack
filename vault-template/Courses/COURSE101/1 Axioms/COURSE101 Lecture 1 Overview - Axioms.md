@@ -1,9 +1,9 @@
 ---
-title: "COURSE101 Lecture 1 Overview - Probability Spaces"
+title: "COURSE101 Lecture 1 Overview - Axioms"
 type: moc
 primer: true
 course: COURSE101
-module: "Probability Spaces"
+module: "Axioms"
 unit: 1
 sources: []
 created: 2026-01-01
@@ -11,7 +11,7 @@ updated: 2026-01-01
 status: growing
 ---
 
-# COURSE101 Lecture 1 Overview - Probability Spaces
+# COURSE101 Lecture 1 Overview - Axioms
 
 **The question:** what does it mean, precisely, to assign probabilities to events, and which rules follow without further assumptions?
 
@@ -30,7 +30,7 @@ flowchart LR
 
 1. Events are subsets of the sample space: [[Set Operations]]
 2. A probability is a function on events obeying three axioms: [[Probability Measure]]
-3. Overlaps are counted once: [[Inclusion-Exclusion for Two Events]]
+3. Overlaps are counted once: [[Inclusion-Exclusion]]
 4. "At least one" is easiest through its complement: [[Complement Counting]]
 
 ## Why it matters

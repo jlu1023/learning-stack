@@ -1,8 +1,8 @@
 ---
-title: "Proof - Inclusion-Exclusion for Two Events"
+title: "Proof - Inclusion-Exclusion"
 type: proof
 course: COURSE101
-module: "Probability Spaces"
+module: "Axioms"
 section: "1.2"
 created: 2026-01-01
 updated: 2026-01-01
@@ -10,9 +10,9 @@ status: growing
 depends_on: ["[[Probability Measure]]", "[[Set Operations]]"]
 ---
 
-# Proof - Inclusion-Exclusion for Two Events
+# Proof - Inclusion-Exclusion
 
-**Theorem:** [[Inclusion-Exclusion for Two Events]]
+**Theorem:** [[Inclusion-Exclusion]]
 **Strategy:** direct, by splitting into disjoint pieces
 
 ## Setup

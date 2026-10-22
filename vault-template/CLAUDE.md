@@ -28,7 +28,7 @@ This vault holds course notes in small linked pieces, plus the learner's progres
 | Note templates | `Templates/` |
 | Engine settings | `vault-learning.yaml` |
 
-Module folders are number-prefixed in syllabus order (`1 Probability Spaces/`, `2 Conditional Probability/`). Note filenames are not prefixed: the concept name is the identity. Notes sit flat in their module folder.
+Module folders are number-prefixed in syllabus order (`1 Axioms/`, `2 Conditional Probability/`). Note filenames are not prefixed: the concept name is the identity. Notes sit flat in their module folder.
 
 ## Atomic notes: one concept per note
 
@@ -53,7 +53,7 @@ Module folders are number-prefixed in syllabus order (`1 Probability Spaces/`, `
 title: "..."
 type: definition
 course: COURSE101
-module: "Probability Spaces"          # matches the folder, without the number
+module: "Axioms"          # matches the folder, without the number
 section: "1.2"                        # the source's numbered item, or slide and page
 lecture: 1                            # optional: the lecture that covers it
 created: YYYY-MM-DD

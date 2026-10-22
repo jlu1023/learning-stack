@@ -21,7 +21,7 @@ One box per module. An arrow from A to B means notes in B depend on notes in A, 
 
 ```mermaid
 flowchart TD
-    n001["1 Probability Spaces"]
+    n001["1 Axioms"]
     classDef unseen fill:#e4e4e4,stroke:#7a7a7a,color:#1a1a1a
     classDef learning fill:#f6cf72,stroke:#a86a12,color:#1a1a1a
     classDef secure fill:#9ec5f0,stroke:#2b5f9e,color:#1a1a1a
@@ -37,7 +37,7 @@ flowchart TD
 
 Prerequisites from earlier courses, by module (details under Connections to other courses):
 
-- PRE100: 1 Probability Spaces (2)
+- PRE100: 1 Axioms (2)
 
 ## Spine
 
@@ -67,10 +67,10 @@ Shapes: rectangle definition, rounded box theorem, hexagon method, stadium conce
 
 A prerequisite-first order within each module, in the course's module order. Plain names on purpose, so the roadmap adds no graph edges; open notes from the diagrams.
 
-### 1 Probability Spaces
+### 1 Axioms
 
 1. Probability Measure
-2. Inclusion-Exclusion for Two Events (proof: Proof - Inclusion-Exclusion for Two Events)
+2. Inclusion-Exclusion (proof: Proof - Inclusion-Exclusion)
 3. Complement Counting
 
 ## Connections to other courses
@@ -79,7 +79,7 @@ A prerequisite-first order within each module, in the course's module order. Pla
 
 **PRE100**
 
-- Set Operations: used by Inclusion-Exclusion for Two Events, Probability Measure
+- Set Operations: used by Inclusion-Exclusion, Probability Measure
 
 ### Where this course is used elsewhere
 

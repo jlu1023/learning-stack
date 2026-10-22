@@ -1,8 +1,8 @@
 ---
-title: "Example - At Least One Six in Four Rolls"
+title: "Example - At Least One Six"
 type: example
 course: COURSE101
-module: "Probability Spaces"
+module: "Axioms"
 section: "1.3"
 created: 2026-01-01
 updated: 2026-01-01
@@ -10,7 +10,7 @@ status: growing
 depends_on: ["[[Complement Counting]]"]
 ---
 
-# Example - At Least One Six in Four Rolls
+# Example - At Least One Six
 
 **Illustrates:** [[Complement Counting]]
 
