@@ -1,0 +1,8 @@
+{
+  "name": "learn",
+  "version": "0.1.0",
+  "description": "A Socratic tutor for your Obsidian course notes: primers, one-idea-at-a-time teaching, spaced retrieval quizzes, dependency roadmaps and an optional Granola lecture-transcript pass.",
+  "author": { "name": "James Lu" },
+  "license": "MIT",
+  "keywords": ["learning", "obsidian", "spaced-repetition", "retrieval-practice", "tutor", "granola"]
+}

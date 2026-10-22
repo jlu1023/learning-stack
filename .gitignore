@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Node (optional Mermaid checks)
+node_modules/
+
+# Secrets
+.env
+.env.*
+
+# If you use vault-template/ itself as your vault, keep your material out of git
+vault-template/Sources/*
+!vault-template/Sources/README.md
+vault-template/Courses/_learning/sessions/*
+!vault-template/Courses/_learning/sessions/.gitkeep
+vault-template/.obsidian/workspace*
+vault-template/.obsidian/plugins/
+vault-template/.trash/

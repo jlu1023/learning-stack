@@ -1,0 +1,19 @@
+# Settings for the learn plugin's engine. Every key is optional.
+
+# Courses whose notes are only ever prerequisites (for example last year's
+# courses): no roadmap, never quizzed, shown as external prerequisites.
+reference_courses: [PRE100]
+
+# Courses whose notes live outside Courses/. Each top-level folder under
+# `root` (minus `exclude`) is a module; `mixed_cap` limits how many of the
+# course's items one mixed review draw may hold (0 = no cap).
+extra_courses: {}
+#  Reading:
+#    root: "Reading/"
+#    exclude: ["Inbox"]
+#    mixed_cap: 1
+
+# What to call a folder-based unit, per course: Lecture, Week, Chapter or Module.
+# (Courses whose notes carry a `lecture:` field always use Lecture.)
+unit_labels: {}
+#  COURSE202: Week

@@ -1,0 +1,14 @@
+{
+  "name": "obsidian-learning-loop",
+  "description": "A Socratic tutor for Obsidian course notes: primers, spaced retrieval quizzes and dependency roadmaps, for Claude Code.",
+  "owner": {
+    "name": "James Lu"
+  },
+  "plugins": [
+    {
+      "name": "learn",
+      "source": "./plugin",
+      "description": "A Socratic tutor for your Obsidian course notes, with spaced retrieval quizzes and roadmaps."
+    }
+  ]
+}

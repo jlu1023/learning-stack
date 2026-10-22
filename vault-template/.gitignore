@@ -1,0 +1,18 @@
+# Raw course material and lecture transcripts: copyrighted or private
+Sources/*
+!Sources/README.md
+
+# Learner data: your own progress, not for sharing
+Courses/_learning/sessions/*
+!Courses/_learning/sessions/.gitkeep
+
+# Obsidian per-device state and caches
+.obsidian/workspace*
+.obsidian/cache
+.obsidian/plugins/*/data.json
+.trash/
+.smart-env/
+
+# Secrets
+.env
+.env.*
