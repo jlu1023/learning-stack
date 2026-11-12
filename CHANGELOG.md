@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0
+
+- Unit tests: once every node in a unit is learned, `/learn:teach` offers a short test (one question per node, an integrative problem, a teach-back); `test [N]` runs one on demand and `<module> final` tests a whole module.
+- A teach-back question guards the step to `mastered`.
+- Slips are pointed out once and never logged or re-taught; only conceptual errors get Error Log redos.
+- One push-back per node on a right answer, on substance only; reasoning the learner did not give is never credited.
+- A plain progress line per unit at the close (`5/13 learning, 2/13 secure`), and `harder` / `easier` shortcuts.
+
 ## 1.2.2
 
 - Ready for the plugin directory: `/learn:setup` no longer offers to write Claude Code's permission settings (it explains how to allow the engine instead), and the plugin README says exactly what the plugin runs, writes, reads and sends.

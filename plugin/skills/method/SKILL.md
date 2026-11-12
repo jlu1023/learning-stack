@@ -173,11 +173,31 @@ The Learner Profile may list the learner's recurring error patterns (for example
 
 **Pass rule:** at least 2 of 3 correct, including at least one non-recall question, **and** a statement of the node with every hypothesis and the quantifiers in the right order. Anything else is a fail.
 
-**Lenient marking.** Slips that do not change the meaning are pointed out in one line but do not fail a statement or an answer: wording, notation (a domain arrow, a variable name), $<$ for $\leq$ where the note allows either, an arithmetic slip in otherwise right working. A missing or wrong hypothesis, a quantifier in the wrong order, or a wrong method still fails.
+**Lenient marking.** Slips that do not change the meaning are pointed out in one line but do not fail a statement or an answer: wording, notation (a domain arrow, a variable name), $<$ for $\leq$ where the note allows either, an arithmetic slip in otherwise right working. A missing or wrong hypothesis, a quantifier in the wrong order, or a wrong method still fails. **Slips are never logged and get no redo:** point them out once and never re-teach them. A slip that recurs across sessions goes into the Learner Profile observations as something to watch, not into the Error Log.
+
+**Credit only what was said.** Never credit reasoning the learner did not give. If an answer is right but the reason is missing, ask for it once before marking. Lenient marking forgives slips; it does not fill in reasoning.
+
+**One push-back per node.** Once in each lock-in, after a right answer, push back on substance ("does that still hold if ...?"): a hypothesis, an edge case or a near-miss. Never on wording or notation, never more than once per node, and a sound defence stands as a pass with no further probing.
 
 **On a fail:** stay on the node and re-teach a smaller step, then retry once. If the failure traces to a prerequisite (check the node's `prereqs` and `external_prereqs` in `graph`), insert that prerequisite into the plan first, teach it and lock it in, then return. If the retry also fails, record a fail and move on: the node comes back the next day, and only a second fail in a row drops its level.
 
 **On a pass:** record a pass, then move to the next node in the plan.
+
+## Unit tests and finals
+
+**Unit test.** When every node in a unit is at least `learning` (`VL unit <COURSE> <N>`, `node_list`) and there is no `sessions/... <COURSE> Unit <N> test.md` yet, `teach` on that course offers the unit test before new material. The learner may decline; it is offered again next time. `teach <COURSE> test [N]` runs it at any time.
+
+- One question per node, at most 5: failed nodes first, then those longest since `last_quizzed`. No topic labels; types mixed as in Quiz design.
+- One integrative problem that needs two or more of the unit's ideas together.
+- One teach-back: the learner explains one of the unit's central results as they would to a classmate, including why each hypothesis is there. Marked on substance only: a missing hypothesis or a wrong reason fails it.
+- Confidence first, verdict after each, no re-teaching during the test. Slips per Lenient marking.
+- Record each node pass or fail; the integrative problem and the teach-back count for every node they genuinely test.
+- Close with the progress line (Logging) and the failed nodes by name. They come back through normal spacing; nothing is re-taught on the spot.
+- Session file `YYYY-MM-DD <COURSE> Unit <N> test.md`, no plan diagram.
+
+**Module final.** `teach <COURSE> <module> final`, on request (before exams, say): the same format across the module, at most 8 node questions, 2 integrative problems and one teach-back.
+
+**Teach-back for mastered.** When a `secure` node is due and a pass would make it `mastered` (21 days since `mastery_since`), its review question is a teach-back of the node, marked as above.
 
 ## Spacing and interleaving
 
@@ -200,7 +220,7 @@ These are implemented by `record`; they are stated here so the rules are visible
 ```
 
 - `category` is one of: `logic`, `missing hypothesis`, `algebra`, `imported method or number`, `misread question`, `note error`, `overconfidence`.
-- `redo` is 3 to 7 days after `date`: 3 for a slip, 7 for a conceptual error.
+- `redo` is 3 to 7 days after `date`: 3 for a misread question, 7 for a conceptual error. Slips (arithmetic, sign, notation or wording in otherwise right working) are not logged at all (Lenient marking).
 - The node is a plain name, never a wikilink: the log is a report, and reports never wikilink.
 - When a redo is done, append ` [redone:: YYYY-MM-DD]` to that line. Nothing else in old entries is edited.
 - Maths inside entries is LaTeX.
@@ -224,6 +244,8 @@ updated: YYYY-MM-DD
 
 The body holds the plan as a small Mermaid diagram (plain labels, no `internal-link` class), then one section per node covering the questions (marked "(generated)" where generated), a summary of the answers, the confidence, the verdict and any errors. It ends with next steps. Maths is LaTeX; node names are plain text, not wikilinks.
 
+**Progress line.** At the close of every `teach` and unit test, one plain line per unit touched, from `VL unit <COURSE> <N>`: `COURSE101 Lecture 4: 5/13 learning, 2/13 secure, 0/13 mastered` (each count is nodes at that level or above). No bars.
+
 **Learner Profile:** append dated observations (pace, recurring confusions, what worked) under "Observations". If the profile has `human_authored: true`, do not edit it; mention the observation in chat instead.
 
 **Operation log:** append one line per run to `_meta/log.md` under a day-month-year heading, for example `teach | COURSE101 Axioms: 2 passed, 1 failed, 2 errors logged`.
@@ -245,6 +267,8 @@ The body holds the plan as a small Mermaid diagram (plain labels, no `internal-l
 | `SOLUTION PLEASE` | Give the full worked solution, then log the node as a fail unless they had already passed it. |
 | `move on` | Record the current node as it stands (a fail if not passed), then go to the next node without follow-ups. |
 | `why` | Explain the last step more slowly: smaller steps, one concrete example. |
+| `harder` | Step up for the rest of the node: fewer hints, free response over listed options, a near-miss twin or hypothesis-dropping question next. |
+| `easier` | Step down: a smaller step, listed options, a concrete example first. The pass rule does not change. |
 | `stop` | End the session: write learner state, Error Log, session file, then regenerate the roadmap. |
 
 The `one node only` and `use the quiz tool` shortcuts and the "no finishing the slide" rule are adapted from Alvarmethod (MIT); see THIRD-PARTY.md.

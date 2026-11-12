@@ -1,7 +1,7 @@
 ---
 name: teach
 description: Socratic teaching session on one course - primer for a new lecture, probe, plan, teach one node at a time, and lock in each with a quiz. Use when the learner asks to be taught a course, module or note from their vault.
-argument-hint: <course> [module | note name | next | deepen | resume]
+argument-hint: <course> [module | note name | next | deepen | resume | test [unit] | <module> final]
 disable-model-invocation: true
 ---
 
@@ -15,6 +15,8 @@ Run a teaching session for `$ARGUMENTS`.
    - a module name: that module's nodes, in suggested order.
    - a note name: that node.
    - `resume` (with or without a course): find the most recent session file in `Courses/_learning/sessions/` with `status: open` (for that course if one is given). Read its plan, its per-node log, its `stopped_at` node and rung, and its last exchanges, plus any Error Log entries from that session. Recap in at most three lines (where they stopped, what passed, what failed), then skip the warm-up and the probe for nodes that session already confirmed, and continue from the recorded node and rung. Keep writing to the same session file. If no open session exists, say so and fall back to `next`.
+   - `test [N]` or `<module> final`: run the unit test (unit N, or the latest unit whose nodes are all at least `learning`) or the module final per the method (Unit tests and finals), after the warm-up, then close (step 8). Skip steps 4 to 7.
+   - Before planning `next` or a module, check the course's units (`VL unit <COURSE> all`, then `VL unit <COURSE> <N>` for started ones): if a unit is ready for its test and has none yet, offer it first (method).
 
 3. **Week ahead, then warm-up.** If this is the first `teach` or `quiz` run of a new week, give the week-ahead overview first (method, Week ahead). Then the warm-up: run `VL due mixed --limit 6` and ask 2 or 3 retrieval questions from the due items and redos (only 2 while the learner has unstarted units whose lectures have happened: method, Learn first when behind), mixed across courses, with **no course or topic labels shown**. Use the confidence-then-verdict flow, then `VL record "<node>" --result pass|fail` for each. If nothing is due, say so in one line and skip.
 
@@ -47,4 +49,4 @@ Run a teaching session for `$ARGUMENTS`.
    - Append dated observations to the Learner Profile (unless it is `human_authored: true`).
    - Run `VL roadmap <COURSE>` to refresh the mastery colours, and report any validation failure.
    - Append `teach | <COURSE> <topic>` to `_meta/log.md`, with nodes passed and failed, and errors logged.
-   - Summarise in chat: what passed, what failed, what is due next (`VL due mixed`), and the suggested next target (`VL next <COURSE>`). When a node failed, name its unit's primer (from `VL unit`) as the place to see how it fits.
+   - Summarise in chat: the progress line for each unit touched (method, Logging), what passed, what failed, what is due next (`VL due mixed`), and the suggested next target (`VL next <COURSE>`). When a node failed, name its unit's primer (from `VL unit`) as the place to see how it fits.
