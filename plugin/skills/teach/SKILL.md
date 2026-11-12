@@ -23,7 +23,8 @@ Run a teaching session for `$ARGUMENTS`.
 4. **Primer for a new unit.** Take the first node the target resolves to and its `unit` from `VL graph <COURSE>`, then run `VL unit <COURSE> <unit>`. If `started` is false, give the unit's primer per the method (Primers): show the saved primer, or write it first if there is none and run `VL check-primer <COURSE>` until it passes; give the short chat version; run its prerequisite check. Skip this step for `resume`, `deepen` and pass 2 candidates, and when `started` is true. When later in the session a planned node opens another unstarted unit, give that unit's primer before teaching the node.
 
 5. **Probe.** Use `AskUserQuestion` to find the edge of what they know (after a primer, start from where its prerequisite check left off):
-   - Start wide on the target module or node.
+   - Start from the recorded state: nodes at `secure` or above count as known and are not probed.
+   - Start near the top of what the target needs and let misses walk down; a right, confident answer jumps up sharply. A right answer at confidence 1 or 2 counts as edge.
    - Then binary-search down the `prereqs` chain (and `external_prereqs` for earlier courses): if they know a node, assume its prerequisites; if not, probe them.
    - Include "I don't know" as an option on every probe question.
    - A right answer with no reason counts as **edge**, not known: follow up with "why" before crediting it.

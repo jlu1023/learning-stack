@@ -17,7 +17,9 @@ Run a retrieval session for `$ARGUMENTS` (default: `mixed 8`).
    - If fewer than `n` are due, say how many and run only those. Do not pad with unseen material; that is what `teach` is for.
 
 4. **Ask, one item at a time,** with **no course, module or topic labels**: not in the question, options or preamble.
-   - Build each question from the node's note (for a card, its prompt and answer, checked against its source): recall with every hypothesis, application to a new case, a hypothesis-dropping question, or a near-miss twin.
+   - Build each question from the node's note (for a card, its prompt and answer, checked against its source), its type set by the node's level: `learning` gets recall from a fresh cue; `secure` gets a near-miss twin, a hypothesis-dropping question or an application in an unfamiliar setting; a node due to become `mastered` gets a teach-back (method).
+   - Adjust as you go: a clean pass makes the next item one notch harder (less familiar wording, or combined with an earlier item's idea), a pass that needed a hint holds, a miss makes the next one easier.
+   - Classify each miss per the method (Classify every miss), and retest wrong-tool and misconception misses at the end.
    - A redo reworks the logged mistake with fresh numbers, and it is labelled "(generated)" in the log.
    - Multiple choice goes through `AskUserQuestion`. Proofs and precise statements are free response. Apply any course override in Teaching Style (for example, statements and methods only for a methods course).
    - For multi-step problems, the learner restates the problem from the stem first.
