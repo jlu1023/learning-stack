@@ -14,7 +14,7 @@ Give a primer for `$ARGUMENTS`.
    - If the course has no such unit because its notes are not in the vault yet, say so in one line. If the slides or notes for it exist, ask the learner where they are (or to put them in `Sources/courses/<COURSE>/`); never write a primer from anything else, and never guess the content.
 
 4. **Show or write it.**
-   - If `primer` is set, read that note and show the chat version (method, Primers). Offer the prerequisite check through `AskUserQuestion`; it records nothing.
+   - If `primer` is set, read that note and show the chat version (method, Primers). Offer the prerequisite check through `AskUserQuestion`; record its answers as a probe (method, Probes record).
    - If not, read the unit's nodes (`node_list`), their notes, the previous and following units' primers or MOCs, the course's Exam Profile if it has one, and the source pages for the slides or textbook. Write the primer note in the method's format, link it from its module MOC, run `VL check-primer <COURSE>` and fix every problem until it passes. Then show the chat version.
    - If a source the learner needs to supply is missing or unreadable (slides not in `Sources/`, a PDF with no text layer), say exactly what is missing and ask for it, rather than writing from less.
 
