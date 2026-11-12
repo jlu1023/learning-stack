@@ -123,7 +123,7 @@ The body, at most 250 words not counting the diagram (about five minutes):
 
 Every link must point to an existing note; never link a note that does not exist. Maths is LaTeX. No em dashes. Link the primer from its module MOC with one line `Overview: <link to the primer>` directly under the MOC's intro paragraph, outside the roadmap markers; a module with several units gets one `Lecture overviews:` list there instead. Do not edit a `human_authored: true` MOC: mention the missing link in chat instead.
 
-**In the chat,** in at most ten lines of plain text: the unit's name, the question, where it sits in one line, the key ideas as a numbered list, and the note's path to read it in Obsidian. Then the prerequisite check: the note's two or three questions as multiple choice, with "I don't know" on each. It records nothing, as probing records nothing. It is the wide end of the probe: a right answer lets the probe start inside the unit, and a miss puts that prerequisite into the plan.
+**In the chat,** in at most ten lines of plain text: the unit's name, the question, where it sits in one line, the key ideas as a numbered list, and the note's path to read it in Obsidian. Then the prerequisite check: the note's two or three questions as multiple choice, with "I don't know" on each. It records as a probe does (Probes record). It is the wide end of the probe: a right answer lets the probe start inside the unit, and a miss puts that prerequisite into the plan.
 
 ## Week ahead
 
@@ -190,6 +190,15 @@ The Learner Profile may list the learner's recurring error patterns (for example
 Before closing a session, retest each wrong-tool and misconception miss once, with fresh numbers and wording, never the same question. Note the retest in the session file; do not record it.
 
 **One push-back per node (`secure` and up).** Once in each lock-in or review, after a right answer, push back on substance ("does that still hold if ...?"): a hypothesis, an edge case or a near-miss. Never on wording or notation, never more than once per node, and a sound defence stands as a pass with no further probing.
+
+**Probes record: the expanding edge of knowledge is the record.** Probe and primer-check answers are recorded with `record`:
+
+- right, with a reason, at confidence 3 or more: `pass` (an `unseen` node becomes `learning` without being taught; a learned node counts as a review);
+- right with no reason, or at confidence 1 or 2: the edge, not recorded; it gets taught;
+- wrong or "I don't know" on a node at `learning` or above: `fail` (a retention miss);
+- wrong or "I don't know" on an `unseen` node: nothing recorded, since a fail would put an untaught node into review and mark its unit started.
+
+Ask probe questions at the level the node would be quizzed at, so a pass is not flattering. The session file gets one `Edge:` line: newly known, at the edge, gaps.
 
 **On a fail:** stay on the node and re-teach a smaller step, then retry once. If the failure traces to a prerequisite (check the node's `prereqs` and `external_prereqs` in `graph`), insert that prerequisite into the plan first, teach it and lock it in, then return. If the retry also fails, record a fail and move on: the node comes back the next day, and only a second fail in a row drops its level.
 

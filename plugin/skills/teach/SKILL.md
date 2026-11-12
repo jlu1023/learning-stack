@@ -28,7 +28,7 @@ Run a teaching session for `$ARGUMENTS`.
    - Then binary-search down the `prereqs` chain (and `external_prereqs` for earlier courses): if they know a node, assume its prerequisites; if not, probe them.
    - Include "I don't know" as an option on every probe question.
    - A right answer with no reason counts as **edge**, not known: follow up with "why" before crediting it.
-   - Probing records nothing. It only shapes the plan.
+   - Record the answers per the method (Probes record); the session file created in step 6 gets the `Edge:` line. Then plan from the gaps.
 
 6. **Plan.** Build the session's prerequisite graph for the gaps: **at most 3 nodes per session**, prerequisites first, so a session fits one sitting of 30 to 45 minutes. If the gap needs more, plan the first 3 and list the rest as next steps for `resume`.
    - Create the session file `Courses/_learning/sessions/YYYY-MM-DD <COURSE> <topic>.md` (format in the method) holding the plan as a small Mermaid diagram, with frontmatter `status: open` and `stopped_at` set to the first node, rung 0. Use plain labels and no `internal-link` class, so the session file adds nothing to the graph.

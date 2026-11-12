@@ -10,6 +10,7 @@
 - The probe starts from recorded state and from the top of what the target needs; a right answer at low confidence counts as edge.
 - `/learn:quiz` picks the question type from the node's level and adjusts difficulty as it goes; generated problems are solved and checked for shortcuts before they are posed.
 - Confidence is asked in the same question call as the answer; the push-back only applies from `secure` up.
+- Probes now record: a reasoned, confident right answer is a pass (an untaught node becomes `learning`), a miss on an already-learned node is a fail; misses on untaught nodes record nothing. The expanding edge of knowledge is the record.
 - Several of these ideas were adapted, in new wording, from Eero Alvar's LearnHarness prompts.
 - A plain progress line per unit at the close (`5/13 learning, 2/13 secure`), and `harder` / `easier` shortcuts.
 
