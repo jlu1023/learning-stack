@@ -9,6 +9,7 @@
 - Misses are sorted (slip, blank, wrong tool, misconception) after asking for the learner's thinking; only wrong tools and misconceptions are logged, and they are retested with fresh wording before the session closes.
 - The probe starts from recorded state and from the top of what the target needs; a right answer at low confidence counts as edge.
 - `/learn:quiz` picks the question type from the node's level and adjusts difficulty as it goes; generated problems are solved and checked for shortcuts before they are posed.
+- Confidence is asked in the same question call as the answer; the push-back only applies from `secure` up.
 - Several of these ideas were adapted, in new wording, from Eero Alvar's LearnHarness prompts.
 - A plain progress line per unit at the close (`5/13 learning, 2/13 secure`), and `harder` / `easier` shortcuts.
 

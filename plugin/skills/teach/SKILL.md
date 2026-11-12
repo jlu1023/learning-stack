@@ -18,13 +18,13 @@ Run a teaching session for `$ARGUMENTS`.
    - `test [N]` or `<module> final`: run the unit test (unit N, or the latest unit whose nodes are all at least `learning`) or the module final per the method (Unit tests and finals), after the warm-up, then close (step 8). Skip steps 4 to 7.
    - Before planning `next` or a module, check the course's units (`VL unit <COURSE> all`, then `VL unit <COURSE> <N>` for started ones): if a unit is ready for its test and has none yet, offer it first (method).
 
-3. **Week ahead, then warm-up.** If this is the first `teach` or `quiz` run of a new week, give the week-ahead overview first (method, Week ahead). Then the warm-up: run `VL due mixed --limit 6` and ask 2 or 3 retrieval questions from the due items and redos (only 2 while the learner has unstarted units whose lectures have happened: method, Learn first when behind), mixed across courses, with **no course or topic labels shown**. Use the confidence-then-verdict flow, then `VL record "<node>" --result pass|fail` for each. If nothing is due, say so in one line and skip.
+3. **Week ahead, then warm-up.** If this is the first `teach` or `quiz` run of a new week, give the week-ahead overview first (method, Week ahead). Then the warm-up: run `VL due mixed --limit 6` and ask 2 or 3 retrieval questions from the due items and redos (only 2 while the learner has unstarted units whose lectures have happened: method, Learn first when behind), mixed across courses, with **no course or topic labels shown**. Confidence comes with each answer, then the verdict, then `VL record "<node>" --result pass|fail` for each. If nothing is due, say so in one line and skip.
 
 4. **Primer for a new unit.** Take the first node the target resolves to and its `unit` from `VL graph <COURSE>`, then run `VL unit <COURSE> <unit>`. If `started` is false, give the unit's primer per the method (Primers): show the saved primer, or write it first if there is none and run `VL check-primer <COURSE>` until it passes; give the short chat version; run its prerequisite check. Skip this step for `resume`, `deepen` and pass 2 candidates, and when `started` is true. When later in the session a planned node opens another unstarted unit, give that unit's primer before teaching the node.
 
 5. **Probe.** Use `AskUserQuestion` to find the edge of what they know (after a primer, start from where its prerequisite check left off):
    - Start from the recorded state: nodes at `secure` or above count as known and are not probed.
-   - Start near the top of what the target needs and let misses walk down; a right, confident answer jumps up sharply. A right answer at confidence 1 or 2 counts as edge.
+   - A right answer at confidence 1 or 2 counts as edge.
    - Then binary-search down the `prereqs` chain (and `external_prereqs` for earlier courses): if they know a node, assume its prerequisites; if not, probe them.
    - Include "I don't know" as an option on every probe question.
    - A right answer with no reason counts as **edge**, not known: follow up with "why" before crediting it.
@@ -39,7 +39,7 @@ Run a teaching session for `$ARGUMENTS`.
    - Use only that pass's rungs. For any problem that needs working, ask the learner to work on paper and type only the final answer or the line they are unsure of; if they paste a photo, read it and point to the first broken line.
    - Read the node's note and its proof and example notes first. For a card (library mode), read its source file at `source_anchor` (read as in the method's Reading sources) and teach from that; never edit the source.
    - Teach concrete before symbolic, make them generate, use the hint ladder, point at the first broken line, enforce the restatement, and ask one hypothesis question per theorem.
-   - Run the lock-in quiz: 3 questions, confidence first, then the pass rule.
+   - Run the lock-in quiz: 3 questions, confidence with each answer, then the pass rule.
    - On a pass, run `VL record "<node>" --result pass` and advance.
    - On a fail, stay: re-teach a smaller step, or insert the missing prerequisite first, then retry once. If the retry also fails, run `VL record "<node>" --result fail` and move on to the next node: it comes back tomorrow, and only a second fail in a row drops its level.
    - Append each node's log to the session file as you go, so an abrupt end loses nothing. After every turn, keep the frontmatter `stopped_at` current: the node and the ladder rung reached (for example `stopped_at: "Boole's Inequality, rung 3"`).

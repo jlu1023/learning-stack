@@ -23,7 +23,7 @@ Run a retrieval session for `$ARGUMENTS` (default: `mixed 8`).
    - A redo reworks the logged mistake with fresh numbers, and it is labelled "(generated)" in the log.
    - Multiple choice goes through `AskUserQuestion`. Proofs and precise statements are free response. Apply any course override in Teaching Style (for example, statements and methods only for a methods course).
    - For multi-step problems, the learner restates the problem from the stem first.
-   - Ask confidence from 1 to 5, then give the verdict, then name the node. Flag overconfidence.
+   - Confidence comes with the answer (method, Quiz design), then the verdict, then name the node. Flag overconfidence.
    - No teaching: on a wrong answer, point at the first broken line, give the correct statement in one or two lines, and move on. Offer `teach` for that node at the end, and name its unit's primer if it has one (`VL graph <COURSE>` gives the node's `unit`, `VL unit <COURSE> <unit>` its `primer`), rather than re-explaining.
 
 5. **Record.**

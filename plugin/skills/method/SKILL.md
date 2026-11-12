@@ -170,7 +170,7 @@ The Learner Profile may list the learner's recurring error patterns (for example
 - **Chat maths is plain text or Unicode** (for example `P(A ∪ B) ≤ P(A) + P(B)`, `Σ 1/n²`, `for all ε > 0`), because a terminal cannot render LaTeX. Everything written to the vault stays LaTeX.
 - A course override in Teaching Style may change the mix (for example, statements and methods only, no proofs, for a methods course).
 
-**Confidence first.** After each answer and before the verdict, ask for confidence 1 to 5. Record it. A confident wrong answer (4 or 5, wrong) is flagged explicitly as **overconfidence** and logged.
+**Confidence with the answer.** For multiple choice, ask confidence 1 to 5 as a second question in the same `AskUserQuestion` call as the answer; for free response, the learner gives it with the answer. Record it. A confident wrong answer (4 or 5, wrong) is flagged explicitly as **overconfidence** and logged.
 
 **Pass rule:** at least 2 of 3 correct, including at least one non-recall question, **and** a statement of the node with every hypothesis and the quantifiers in the right order. Anything else is a fail.
 
@@ -178,7 +178,9 @@ The Learner Profile may list the learner's recurring error patterns (for example
 
 **Credit only what was said.** Never credit reasoning the learner did not give. If an answer is right but the reason is missing, ask for it once before marking. Lenient marking forgives slips; it does not fill in reasoning. A right answer at confidence 1 or 2 is fragile: in a probe it counts as edge, elsewhere it passes and is noted as fragile in the session file.
 
-**Classify every miss.** On a wrong answer with no reasoning, ask once "what was your thinking?", then sort it:
+**Recall stage: just the answer.** While a node is `unseen` or `learning`, the aim is remembering and priming, not diagnosis. A wrong answer gets the right answer in one line, a `fail` record, and the next question: no "why", no sorting, no Error Log entry, no retest. A right answer is credited as given. The reasoning check above and the sorting below apply only from `secure` up, and in unit tests and finals.
+
+**Classify every miss (`secure` and up only).** On a wrong answer with no reasoning, ask once "what was your thinking?", then sort it:
 
 - **slip** (right idea, run wrong): Lenient marking, not logged;
 - **blank** (nothing came to mind): not logged, the `fail` record brings it back;
@@ -187,7 +189,7 @@ The Learner Profile may list the learner's recurring error patterns (for example
 
 Before closing a session, retest each wrong-tool and misconception miss once, with fresh numbers and wording, never the same question. Note the retest in the session file; do not record it.
 
-**One push-back per node.** Once in each lock-in, after a right answer, push back on substance ("does that still hold if ...?"): a hypothesis, an edge case or a near-miss. Never on wording or notation, never more than once per node, and a sound defence stands as a pass with no further probing.
+**One push-back per node (`secure` and up).** Once in each lock-in or review, after a right answer, push back on substance ("does that still hold if ...?"): a hypothesis, an edge case or a near-miss. Never on wording or notation, never more than once per node, and a sound defence stands as a pass with no further probing.
 
 **On a fail:** stay on the node and re-teach a smaller step, then retry once. If the failure traces to a prerequisite (check the node's `prereqs` and `external_prereqs` in `graph`), insert that prerequisite into the plan first, teach it and lock it in, then return. If the retry also fails, record a fail and move on: the node comes back the next day, and only a second fail in a row drops its level.
 
@@ -200,7 +202,7 @@ Before closing a session, retest each wrong-tool and misconception miss once, wi
 - One question per node, at most 5: failed nodes first, then those longest since `last_quizzed`. No topic labels; types mixed as in Quiz design.
 - One integrative problem that needs two or more of the unit's ideas together.
 - One teach-back: the learner explains one of the unit's central results as they would to a classmate, including why each hypothesis is there. Marked on substance only: a missing hypothesis or a wrong reason fails it.
-- Confidence first, verdict after each, no re-teaching during the test. Slips per Lenient marking.
+- Confidence with each answer, verdict after, no re-teaching during the test. Slips per Lenient marking.
 - Record each node pass or fail; the integrative problem and the teach-back count for every node they genuinely test.
 - Close with the progress line (Logging) and the failed nodes by name. They come back through normal spacing; nothing is re-taught on the spot.
 - Session file `YYYY-MM-DD <COURSE> Unit <N> test.md`, no plan diagram.
