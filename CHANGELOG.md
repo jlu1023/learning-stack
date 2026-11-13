@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0
+
+- Learning and recall are separate. A lock-in is now three quick recall questions: the statement with every hypothesis, plus two of what breaks without a hypothesis, when to use it (or a near-miss twin), and the proof's key idea. No proofs and no new problems in lock-ins or reviews; problems come in later passes and unit tests.
+- The proof track: each proof has its own level, scaffold stage and review dates. `/learn:teach <course> proofs [unit]` (or `proofs` alone, across courses) runs it after a unit test: due proofs first, then new ones, at most three a session, through four fading stages (step by step, name the chain then write, from the key line, solo). A pass moves up a stage and returns in 3 days (21, then 60, once solo); a fail moves down and returns in 2. A new Proof Log records where each attempt broke.
+- Engine: `record <proof> --result pass|fail --stage N` (required for proof notes, refused for others, both as JSON errors); a new `proofs [COURSE|mixed] [--limit N]` command; `due` and `next` never draw proofs; `show` and `graph` add `proof_state`. Human-authored proofs keep their state in `proof-progress.md`. Both Review Queues gain a Proofs due view.
+- Library mode: a card named `Proof - <Card>` is on the proof track, its state in the card like any card's.
+- Scaffold first, then fade: any new kind of multi-step problem starts with each step named, then the learner names the steps, then works alone.
+- The method skill is consolidated (about a quarter shorter) with no other rule changes; the template's Teaching Style follows the new lock-in and proof track.
+
 ## 1.3.0
 
 - Unit tests: once every node in a unit is learned, `/learn:teach` offers a short test (one question per node, an integrative problem, a teach-back); `test [N]` runs one on demand and `<module> final` tests a whole module.
