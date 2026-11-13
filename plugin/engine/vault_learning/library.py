@@ -146,7 +146,8 @@ never edit, move or rename its files; the engine refuses to write outside this f
 
 - Cards: `Courses/<CODE>/<N> <Unit>/<Card>.md`, `type: card`, one idea each, with `source:`
   (path relative to the library), `source_anchor:` and `source_hash:` (from `library-scan`).
-- Learner state on cards is written only by the engine's `record` command.
+- Learner state on cards is written only by the engine's `record` command. A card named
+  `Proof - <Card>` is a proof: it is practised on the proof track (`proofs`, `record --stage`).
 - Exercise sets, problem sheets and past papers (flagged by `library-scan`) are cited,
   never solved: their cards set `cite_only: true` and hold no answer.
 - Links: {link_rule}
@@ -186,6 +187,18 @@ type: reference
 
 One line per mistake, appended by `/learn:teach` and `/learn:quiz`:
 `- [date:: YYYY-MM-DD] [course:: CODE] [node:: Card Name] [category:: ...] [redo:: YYYY-MM-DD] What they did: ...`
+
+## Entries
+""",
+    "Courses/_learning/Proof Log.md": """---
+title: "Proof Log"
+type: reference
+---
+
+# Proof Log
+
+One line per proof attempt on the proof track, appended by `/learn:teach <course> proofs`:
+`- [date:: YYYY-MM-DD] [course:: CODE] [proof:: Proof - Card Name] [stage:: 1-4] [result:: pass|fail] Where it broke: ...`
 
 ## Entries
 """,

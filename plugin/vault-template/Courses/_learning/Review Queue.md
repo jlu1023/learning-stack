@@ -23,6 +23,21 @@ WHERE mastery AND review AND review <= date(today)
 SORT course ASC, review ASC
 ```
 
+## Proofs due
+
+The proof track (`/learn:teach <course> proofs`); the engine's `proofs mixed` gives the same list with new proofs.
+
+```dataview
+TABLE WITHOUT ID
+  file.link AS "Proof",
+  proof_stage AS "Stage",
+  proof_level AS "Level",
+  proof_review AS "Due"
+FROM "Courses"
+WHERE proof_review AND proof_review <= date(today)
+SORT proof_review ASC
+```
+
 ## Stuck in learning for over 14 days
 
 ```dataview

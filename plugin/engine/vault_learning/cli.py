@@ -5,7 +5,8 @@
   next COURSE                                        next node to teach (JSON)
   due [COURSE|mixed] [--limit N]                     due reviews and Error Log redos (JSON)
   show NOTE                                          learner state of one note (JSON)
-  record NOTE --result pass|fail                     apply a lock-in or review result
+  record NOTE --result pass|fail [--stage 1-4]       apply a lock-in or review result (--stage: proofs only)
+  proofs [COURSE|mixed] [--limit N]                  the proof track: due and new proofs (JSON)
   index [--dry-run]                                  regenerate _meta/Vault Index.md (also run by `roadmap all`)
   unit COURSE [all|next|N]                           teaching units (lecture, week, module) and their primers (JSON)
   check-primer [COURSE|all] [--no-validate]          lint lecture primers (exit 1 if any fail)
@@ -28,9 +29,11 @@ import json
 import sys
 from pathlib import Path
 
-from .graph import CourseGraph, canonical_code, course_moc_rel, course_spec, in_any_course, roadmap_courses
+from .graph import (CourseGraph, canonical_code, course_moc_rel, course_spec, in_any_course, kind_of,
+                    roadmap_courses)
 from .index import write_index
 from .primer_check import check_all
+from .proofs import apply_proof_result, proofs_due, read_proof_progress, read_proof_state, write_proof_state
 from .units import CourseUnits
 from .render import OBSIDIAN_MARKERS, PLAIN_MARKERS, Renderer
 from .state import (LEVELS, apply_result, read_error_log, read_progress,
@@ -228,7 +231,7 @@ def _find_note(v: Vault, name: str) -> str:
 
 def graph_json(v: Vault, code: str) -> dict:
     cg = CourseGraph(v, _course(v, code))
-    progress = read_progress(v)
+    progress, pprogress = read_progress(v), read_proof_progress(v)
     order = cg.suggested_order()
     pos = {n: i for i, n in enumerate(order)}
     units = CourseUnits(v, code, cg)
@@ -247,17 +250,21 @@ def graph_json(v: Vault, code: str) -> dict:
             "human_authored": note.human_authored,
             "state": read_state(v, n, progress).to_json(),
         })
+        if cg.kind.get(n) == "proof":       # a proof with no theorem note: on the proof track
+            nodes[-1]["proof_state"] = read_proof_state(v, n, pprogress).to_json()
     return {"course": code, "nodes": nodes}
 
 
 def next_node(v: Vault, code: str) -> dict:
     g = graph_json(v, code)
     by = {n["name"]: n for n in g["nodes"]}
-    ok = lambda n: LEVELS.index(n["state"]["mastery"]) >= 1
-    elig = [n for n in g["nodes"] if n["state"]["mastery"] == "unseen"
+    # proofs are learned on the proof track, so they are never taught as nodes or block one
+    proof = lambda n: "proof_state" in n  # noqa: E731
+    ok = lambda n: proof(n) or LEVELS.index(n["state"]["mastery"]) >= 1  # noqa: E731
+    elig = [n for n in g["nodes"] if n["state"]["mastery"] == "unseen" and not proof(n)
             and all(ok(by[p]) for p in n["prereqs"])]
     if not elig:
-        blocked = [n for n in g["nodes"] if n["state"]["mastery"] == "unseen"]
+        blocked = [n for n in g["nodes"] if n["state"]["mastery"] == "unseen" and not proof(n)]
         return {"course": code, "next": None,
                 "reason": "no unseen node has all its prerequisites at learning or better" if blocked
                           else "every node is at learning or better"}
@@ -298,6 +305,8 @@ def due_items(v: Vault, which: str | None, today: dt.date, limit: int) -> dict:
     for code in courses:
         cg = CourseGraph(v, code)
         for n in cg.nodes:
+            if cg.kind.get(n) == "proof":     # proofs are drawn by `proofs`, never by `due`
+                continue
             s = read_state(v, n, progress)
             if s.mastery == "unseen" and not s.last_quizzed:
                 continue
@@ -355,6 +364,10 @@ def main(argv=None) -> int:
     p = sub.add_parser("show"); p.add_argument("note")
     p = sub.add_parser("record"); p.add_argument("note")
     p.add_argument("--result", choices=["pass", "fail"], required=True)
+    p.add_argument("--stage", type=int, choices=[1, 2, 3, 4], default=None,
+                   help="proof notes only: the scaffold stage attempted")
+    p = sub.add_parser("proofs"); p.add_argument("course", nargs="?", default="mixed")
+    p.add_argument("--limit", type=int, default=0)
     p = sub.add_parser("index"); p.add_argument("--dry-run", action="store_true")
     p = sub.add_parser("unit"); p.add_argument("course"); p.add_argument("which", nargs="?", default="all")
     p = sub.add_parser("check-primer"); p.add_argument("course", nargs="?", default="all")
@@ -430,10 +443,14 @@ def _run(args) -> int:
         out = unit_json(v, canonical_code(args.course), args.which)
     elif args.cmd == "due":
         out = due_items(v, args.course, today, args.limit)
+    elif args.cmd == "proofs":
+        mixed = args.course in (None, "mixed", "all")
+        courses = roadmap_courses(v) if mixed else [_course(v, canonical_code(args.course))]
+        out = proofs_due(v, courses, today, args.limit)
     elif args.cmd == "show":
         out = show_json(v, args.note)
     elif args.cmd == "record":
-        out = record_json(v, args.note, args.result, today)
+        out = record_json(v, args.note, args.result, today, args.stage)
     print(json.dumps(out, indent=1, default=str))
     return 0
 
@@ -476,11 +493,24 @@ def doctor_json() -> dict:
 
 def show_json(v: Vault, name: str) -> dict:
     rel = _find_note(v, name)
-    return {"note": rel, "state": read_state(v, rel).to_json(), "human_authored": v.note(rel).human_authored}
+    out = {"note": rel, "state": read_state(v, rel).to_json(), "human_authored": v.note(rel).human_authored}
+    if kind_of(v.note(rel)) == "proof":
+        out["proof_state"] = read_proof_state(v, rel).to_json()
+    return out
 
 
-def record_json(v: Vault, name: str, result: str, today: dt.date) -> dict:
+def record_json(v: Vault, name: str, result: str, today: dt.date, stage: int | None = None) -> dict:
     rel = _find_note(v, name)
+    if kind_of(v.note(rel)) == "proof":
+        if stage is None:
+            raise EngineError(f"'{name}' is a proof: give --stage 1 to 4, the scaffold stage attempted")
+        before_p = read_proof_state(v, rel)
+        after_p = apply_proof_result(before_p, result == "pass", stage, today)
+        where = write_proof_state(v, rel, after_p)
+        return {"note": rel, "result": result, "stage": stage, "before": before_p.to_json(),
+                "after": after_p.to_json(), "written_to": where}
+    if stage is not None:
+        raise EngineError(f"--stage is for proof notes only, and '{name}' is not a proof")
     before = read_state(v, rel)
     after = apply_result(before, result == "pass", today)
     where = write_state(v, rel, after)

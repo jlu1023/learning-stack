@@ -1,6 +1,6 @@
 """Static Review Queue for plain mode (no Obsidian, so no Dataview).
 
-The same four views as the Dataview version in the vault template, as
+The same views as the Dataview version in the vault template, as
 Markdown tables written by `roadmap all` and `review-queue`. The file is
 generated: every run replaces it.
 """
@@ -29,11 +29,15 @@ def _table(header: list[str], rows: list[list]) -> list[str]:
 
 def review_queue_text(v: Vault, today: dt.date) -> str:
     from .cli import due_items       # cli imports this module
+    from .proofs import proofs_due
     progress = read_progress(v)
     due = due_items(v, "mixed", today, 0)
+    proofs = proofs_due(v, roadmap_courses(v), today)
     link = lambda rel: make_link(REVIEW_QUEUE_REL, rel)  # noqa: E731
     due_rows = [[link(i["path"]), i["course"], i["state"]["mastery"], i["state"]["review"],
                  i["state"]["last_quizzed"] or "", i["state"]["review_interval"] or ""] for i in due["due"]]
+    proof_rows = [[link(i["path"]), i["course"], i["state"]["proof_stage"], i["state"]["proof_level"],
+                   i["state"]["proof_review"]] for i in proofs["due"]]
     redo_rows = [[e.get("date", ""), e.get("course", ""), e.get("node", ""), e.get("category", ""),
                   e.get("redo", "")] for e in due["redos"]]
     stuck, counts = [], Counter()
@@ -56,6 +60,8 @@ def review_queue_text(v: Vault, today: dt.date) -> str:
          "Learner state for `human_authored: true` notes is read from `progress.md`.", "",
          "## Due for review", ""]
     L += _table(["Node", "Course", "Mastery", "Due", "Last quizzed", "Interval (days)"], due_rows)
+    L += ["## Proofs due", ""]
+    L += _table(["Proof", "Course", "Stage", "Level", "Due"], proof_rows)
     L += ["## Error Log redos due", ""]
     L += _table(["Date", "Course", "Node", "Category", "Redo"], redo_rows)
     L += [f"## Stuck in learning for over {STUCK_DAYS} days", ""]
