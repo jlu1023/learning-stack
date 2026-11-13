@@ -148,6 +148,10 @@ The skills call the engine for you, but it is an ordinary command-line tool. Fro
 python3 <plugin>/engine/vl.py doctor
 python3 <plugin>/engine/vl.py due mixed
 python3 <plugin>/engine/vl.py --date 2026-02-01 record "Probability Measure" --result pass
+python3 <plugin>/engine/vl.py proofs mixed
+python3 <plugin>/engine/vl.py record "Proof - Inclusion-Exclusion" --result pass --stage 1
 ```
+
+`record` on a proof note needs `--stage` (the scaffold stage attempted, 1 to 4) and writes the proof's own track; `due` lists reviews, `proofs` lists the proof track.
 
 Every command prints JSON; `--help` lists them. To run the tests, from `plugin/engine/` in a clone of this repository: `python3 -m pip install -r requirements-dev.txt`, then `python3 -m pytest`.

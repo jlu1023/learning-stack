@@ -9,7 +9,9 @@ The loop is **Eero Alvar's**, from his video [How I Use AI to Learn Things](http
 1. **Probe** for the edge of what you know, with multiple-choice questions that start wide and narrow down the prerequisite chain.
 2. **Plan** a small prerequisite graph for the gaps, at most three notes per session.
 3. **Teach one node,** one idea per turn, then hand the turn back.
-4. **Lock-in quiz** of three questions. Advance only on a pass; on a fail, re-teach smaller or teach the missing prerequisite first.
+4. **Lock in** with three quick recall questions: the statement, plus two of what breaks without a hypothesis, when to use it, and the proof's key idea. Advance only on a pass; on a fail, re-teach smaller or teach the missing prerequisite first.
+
+Learning and recall are kept apart. A lock-in or a review only checks that you remember; worked problems come in later passes and unit tests, and writing proofs has its own track (below).
 
 This plugin adds a vault underneath it: every node is one of your own notes, the prerequisite graph comes from the notes' `depends_on` links, and your progress is stored in the notes themselves, so the next session starts where the last one stopped.
 
@@ -25,6 +27,7 @@ This plugin adds a vault underneath it: every node is one of your own notes, the
 | **Definitions first** | You decide examples from the definition alone before trusting intuition. | Students' mental image of a concept can drift from its definition (Tall and Vinner, 1981). |
 | **Self-explanation** | "Why" follow-ups; a right answer with no reason counts as the edge, not as known. | Explaining each step to yourself improves understanding (Chi and others, 1989). |
 | **Hints, not answers** | A three-rung hint ladder; the full solution only on `SOLUTION PLEASE`. | In a field experiment, students given an answer-giving AI tutor did worse on later unaided exams, while a tutor that gave hints did not harm them (Bastani and others, 2025). |
+| **Faded scaffolding** | A new kind of problem or proof starts with every step named, then you name the steps, then you work alone; proofs fade over four stages on their own spaced track. | Fading worked-example steps one at a time, as the learner takes them over, eases the move from studying examples to solving alone (Renkl and Atkinson, 2003). |
 | **Calibration** | Confidence 1 to 5 before every verdict; confident misses are flagged. | Knowing what you do not know is what makes study time go to the right places (Dunlosky and others, 2013, review). |
 
 ## The spacing ladder
@@ -38,6 +41,17 @@ Each note carries a `mastery` level and a `review` date, written only by the eng
 - Any fail resets the interval to 1 day. One fail keeps the level, so a bad day costs only an early review; a second fail in a row drops one level.
 
 The rungs are a practical schedule, not an optimum: the best gap depends on how long you need to remember something (Cepeda and others, 2008, found it grows with the retention interval). If you want a different ladder, change `LADDER` in `plugin/engine/vault_learning/state.py`.
+
+## The proof track
+
+Recalling a theorem and being able to prove it are different skills, so proofs are never asked for in lock-ins or reviews (only their key idea in one line). Each proof note has its own track, offered after a unit's test (`/learn:teach <course> proofs`), with four stages that hand over more each time:
+
+1. **Step by step:** the tutor gives each move and you carry it out.
+2. **Name the chain, then write:** you name the moves in order, then write the proof.
+3. **From the key line:** you are given the one key line and write the rest.
+4. **Solo,** on paper.
+
+A pass moves you up a stage and brings the proof back in 3 days; a solo pass brings it back in 21 days, then 60. A fail moves you down a stage and brings it back in 2 days. A Proof Log records where each attempt broke.
 
 ## Matching the exam
 
@@ -56,6 +70,7 @@ Profiles never decide which topics to skip: examiners often set unfamiliar quest
 - Chi, M. T. H., Bassok, M., Lewis, M. W., Reimann, P. and Glaser, R. (1989). Self-explanations: how students study and use examples in learning to solve problems. *Cognitive Science*.
 - Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J. and Willingham, D. T. (2013). Improving students' learning with effective learning techniques. *Psychological Science in the Public Interest*.
 - Rawson, K. A. and Dunlosky, J. (2011). Optimizing schedules of retrieval practice for durable and efficient learning: how much is enough? *Journal of Experimental Psychology: General*.
+- Renkl, A. and Atkinson, R. K. (2003). Structuring the transition from example study to problem solving in cognitive skill acquisition: a cognitive load perspective. *Educational Psychologist*.
 - Roediger, H. L. and Karpicke, J. D. (2006). Test-enhanced learning: taking memory tests improves long-term retention. *Psychological Science*.
 - Rohrer, D. and Taylor, K. (2007). The shuffling of mathematics problems improves learning. *Instructional Science*.
 - Slamecka, N. J. and Graf, P. (1978). The generation effect: delineation of a phenomenon. *Journal of Experimental Psychology: Human Learning and Memory*.

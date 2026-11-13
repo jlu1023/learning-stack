@@ -37,7 +37,7 @@ In Claude Code, in the folder you want to study in:
 | Skill | What it does |
 |---|---|
 | `/learn:setup` | Checks Python, then makes a vault or connects your notes. |
-| `/learn:teach <course>` | Warm-up reviews, a primer for a new lecture, a probe for what you already know, a plan of at most three ideas, then one idea at a time with a lock-in quiz. |
+| `/learn:teach <course>` | Warm-up reviews, a primer for a new lecture, a probe for what you already know, a plan of at most three ideas, then one idea at a time, each locked in with quick recall questions. `test` runs a unit test; `proofs` runs the proof track, where you learn to write proofs through a fading scaffold. |
 | `/learn:quiz [course\|mixed]` | Pure retrieval over what is due, mixed across courses with topic labels hidden, plus redos of your logged mistakes. |
 | `/learn:primer <course> <unit>` | A five-minute overview of a lecture or week: the question it answers, where it sits, its key ideas, and a prerequisite check. `/learn:primer week` gives the week ahead. |
 | `/learn:roadmap [course]` | Dependency maps, a suggested order and a data-gaps report, built from your notes' `depends_on` links. |
@@ -47,7 +47,7 @@ In Claude Code, in the folder you want to study in:
 | `/learn:query <question>` | Answers from your notes, with a link for every claim. |
 | `/learn:lint` | A health check: broken links, theorems without proofs, failing primers, the review backlog. |
 
-Behind the skills is a small engine, standard-library Python only, that keeps the learner state (`unseen`, `learning`, `secure`, `mastered`), schedules reviews on a 1, 3, 7, 21, 60-day ladder, and draws the roadmaps. It runs on your machine; Claude Code sends the notes it reads to Claude as usual.
+Behind the skills is a small engine, standard-library Python only, that keeps the learner state (`unseen`, `learning`, `secure`, `mastered`), schedules reviews on a 1, 3, 7, 21, 60-day ladder, schedules each proof on its own track, and draws the roadmaps. It runs on your machine; Claude Code sends the notes it reads to Claude as usual.
 
 ## Using it without Obsidian
 
@@ -59,7 +59,7 @@ Run `/learn:setup` (or `/learn:connect`) in your notes folder. It reads your Mar
 
 ## How it teaches
 
-The loop is Eero Alvar's (probe, plan, teach one node, lock-in quiz), built on retrieval practice, spacing, interleaving, generation and hints rather than answers. [LEARNING-METHOD.md](LEARNING-METHOD.md) explains each piece and its evidence. You tune it to yourself in `Courses/_learning/Teaching Style.md`, including a different style per course (proof-led, methods-led or applied), each matched to how that course is examined.
+The loop is Eero Alvar's (probe, plan, teach one node, lock in), built on retrieval practice, spacing, interleaving, generation and hints rather than answers. Learning and recall are kept apart: lock-ins and reviews are quick recall, and writing proofs is practised on its own spaced track, from step by step to solo. [LEARNING-METHOD.md](LEARNING-METHOD.md) explains each piece and its evidence. You tune it to yourself in `Courses/_learning/Teaching Style.md`, including a different style per course (proof-led, methods-led or applied), each matched to how that course is examined.
 
 ## Integrity
 
