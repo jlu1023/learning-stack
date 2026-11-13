@@ -6,7 +6,7 @@ argument-hint: <course> <unit number | next> | week
 
 Give a primer for `$ARGUMENTS`.
 
-1. **Load the rules.** Load the `method` skill, sections Primers, Week ahead, Grounding and trust, and Tone. `VL` means the engine command in the method skill.
+1. **Load the rules.** Load the `method` skill, sections Primers and the week ahead, Grounding and trust, and Tone. `VL` means the engine command in the method skill.
 
 2. **`week`:** give the week-ahead overview exactly as the method (Week ahead) says: read `Courses/_learning/Timetable.md`, run `VL unit <COURSE> all` for each course, write `Courses/_learning/Week Ahead.md`, and show one screen in chat. Stop there.
 

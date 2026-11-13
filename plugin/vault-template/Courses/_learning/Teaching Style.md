@@ -11,6 +11,8 @@ human_authored: true
 
 **Your note.** It tells `/learn:teach` and `/learn:quiz` how you want to be taught. They read it every run and never edit it. Where it conflicts with the plugin's `method` skill, this note wins, except for the method's hard rules: teach from the vault notes, verify computations, and never give a full solution before you have attempted it.
 
+**The aim:** a steadily expanding, recorded edge of knowledge. Learn first, then recall; writing proofs is practised on its own track.
+
 Everything below is a working default. Rewrite it in your own words as you learn what works for you, and log each change under Refinements.
 
 ## How I learn best
@@ -22,11 +24,11 @@ Everything below is a working default. Rewrite it in your own words as you learn
 0. **Motivate.** What problem forced this definition or result into existence, and what goes wrong without it?
 1. **Definition.** I state it exactly. For each condition: what it does, and what breaks without it. Then I negate it.
 2. **Examples from the definition alone.** I generate examples, non-examples and edge cases, and decide each using only the definition. (Tall and Vinner: a student's mental picture of a concept can differ from its formal definition; this step closes the gap.)
-3. **First consequences.** I derive the immediate results myself from the definitions and axioms, with hints only. For example, $P(\emptyset) = 0$ from the probability axioms.
-4. **Theorems.** First ask how I could have discovered the result. Then I predict the statement, prove it, and say where each hypothesis is used.
+3. **First consequences.** The immediate results, reasoned through from the definitions and axioms with hints only (for example, $P(\emptyset) = 0$ from the probability axioms). Writing them out as proofs is the proof track.
+4. **Theorems.** First ask how I could have discovered the result. Then I predict the statement and say where each hypothesis is used, and learn the proof's key idea.
 5. **Connect.** Link the node to the earlier nodes it builds on, and to other courses where the link is real.
 6. **Application.** A problem that needs the idea, then the same idea in a different setting: what carries over, what fails, and why.
-7. **Lock-in.** The definition word for word, one short consequence proved from scratch, and one problem in a new setting.
+7. **Lock-in (recall only).** The statement word for word, then two quick recall questions: the role of a condition, when to use it, or for a theorem the proof's key idea in one line. No proofs and no new problems.
 
 ## Three passes per topic (successive relearning)
 
@@ -34,7 +36,7 @@ Each topic is learned in three spaced passes rather than all at once (Rawson and
 
 | Pass | When the note is | Rungs |
 |---|---|---|
-| **1. Foundations** | `unseen` | 0, 1, 2, 3 and 7. Theorems get their statement and the role of each hypothesis, no proof yet |
+| **1. Foundations** | `unseen` | 0, 1, 2, 3 and 7. Theorems get their statement, the role of each hypothesis and the proof's key idea |
 | **2. Depth** | `learning`, at least 3 days after pass 1 | Recall the definitions from memory, then 4, 5, one light application on paper, 7 |
 | **3. Use** | `secure` or `mastered` | Recall, then one light application in a new setting |
 
@@ -42,12 +44,23 @@ A failed recall in pass 2 or 3 drops the note back to pass 1. I can say `pass 1`
 
 **Working on paper:** for any problem that needs working, I solve it on paper and type only the final answer or the line I am unsure of. If I paste a photo of my working, point to the first broken line.
 
+**Scaffold first, then fade:** a multi-step problem or proof of a kind I have not done before starts scaffolded (you name each step, I do it, one per turn). Next time I name the steps, then solve. Then I solve alone. Fade only after a clean attempt.
+
 **Session length:** at most 3 nodes and 30 to 45 minutes.
 
 ## Probes
 
 - Start at the definition (exact statement, the role of each condition), then examples, then a first consequence.
 - A right answer without a reason counts as the edge, not as known. "I don't know" is always a valid answer.
+
+## Proof track
+
+Proofs are learned, not recalled: lock-ins and `/learn:quiz` never ask me to write one, only its key idea in one line.
+
+- **Stages** (a fading scaffold): (1) you give the chain of moves step by step and I carry out each; (2) I name the chain, then write; (3) I write it from the theorem and one key line; (4) solo, on paper, typing only the line I am unsure of.
+- **Spaced, not blocked:** each proof has its own level, stage and review date in the engine, and every attempt gets a line in `Proof Log.md` saying where it broke. After a unit test, `/learn:teach <course> proofs` takes due proofs first, mixed across units, then new proofs from tested units. At most 3 per session.
+- **Recall in step:** once I have worked on a proof, its key idea joins its theorem's recall questions.
+- A course override below may make the proof track a course's main practice, or keep its short derivations in recall.
 
 ## Pace and feedback
 
@@ -64,10 +77,10 @@ The three examples below show the three common shapes. Rename the headings to yo
 
 ### Example: a proof-led course (for example, real analysis)
 
-Mostly proof, with exact statements and unseen questions. **Keep the full default ladder, with proofs at the centre**, plus:
+Mostly proof, with exact statements and unseen questions. **Keep the full default ladder, and make the proof track the main practice**, plus:
 
 - **Statements:** lock-in checks every definition and named theorem word for word, with every condition and the quantifiers in order.
-- **Plan before proving:** in one line, I name the definition I will unwind or the theorem I will cite, and check its hypotheses. Then I write the proof.
+- **Plan before proving:** on the proof track, in one line, I name the definition I will unwind or the theorem I will cite, and check its hypotheses. Then I write the proof.
 - **Decide, then prove:** passes 2 and 3 include fresh "is it true that...?" items built from the notes. I decide first, then prove it or give a counterexample.
 - **New settings:** application uses a space not seen in the notes.
 
@@ -82,9 +95,9 @@ Most marks are for choosing and carrying out a method. **Method notes use a meth
 3. **Steps.** I give the steps in order, and the condition to check at each one.
 4. **Traps.** Where it usually goes wrong: a rule used when its conditions fail, a lost sign or limit.
 5. **Do it.** One short problem on paper. In pass 1 the method is named; in passes 2 and 3 it is not, so I choose it first.
-6. **Lock-in.** Name the method from a problem's first line, give the steps and why they work, and do one problem in a new setting.
+6. **Lock-in (recall only).** Name the method from a problem's first line, and give the steps and why they work. Problems in new settings belong to passes 2 and 3.
 
-**Recall and method, not proof:** state definitions and conditions accurately and say when a result applies; no formal proofs except the derivations the Exam Profile marks as bookwork, or when I ask.
+**Recall and method, not proof:** state definitions and conditions accurately and say when a result applies; nothing on the proof track except the derivations the Exam Profile marks as bookwork, or when I ask.
 
 **Marking my work:** every justification is a marked step. Check that I stated each rule's condition before using it, and that the arithmetic is exact. A right answer with a missing justification is partial: name the missing step.
 

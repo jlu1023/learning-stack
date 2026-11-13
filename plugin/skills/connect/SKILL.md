@@ -57,6 +57,7 @@ Connect `$ARGUMENTS` (default: the current folder) as a read-only library.
    - Never copy long passages: a few lines in your own words, pointing back to the source.
    - **Flagged sources (problem sheets, exercises, past papers):** a card may only cite a question, with `cite_only: true`, a prompt like "Attempt question 3 of <source> on paper", and an Answer section that says only "Attempt it first." Never write a solution, a hint that gives it away, or a worked answer. `library-scan` reports any card from a flagged source whose Answer holds more as an integrity violation; fix every one.
    - Cards carry no learner-state fields: they start as unseen.
+   - A proof worth practising gets its own card, named `Proof - <Card name>` after the card for its result, with the proof's key steps as the answer. It goes on the proof track (`teach <course> proofs`), not into reviews. Never for a flagged source.
 
 7. **Finish.** Run `VL roadmap all`, then `VL library-scan` again and confirm the files you did are `current` and `integrity_violations` is empty. Append `connect | <library>: <n> cards from <m> files` to `_meta/log.md` in the state folder. Report the cards written per file, the flagged files and how they were handled, anything marked `[?: ...]`, and the next step (`/learn:quiz` from tomorrow, `/learn:teach <CODE>` now).
 

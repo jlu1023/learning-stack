@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 Run a retrieval session for `$ARGUMENTS` (default: `mixed 8`).
 
-1. **Load the rules.** Load the `method` skill (Primers, Week ahead, Quiz design, Spacing and interleaving, Logging, Tone) and read `Courses/_learning/Learner Profile.md` and `Courses/_learning/Teaching Style.md` (for course overrides and question format). `VL` means the engine command in the method skill.
+1. **Load the rules.** Load the `method` skill (Primers and the week ahead, Questions, Marking, Spacing and interleaving, Logging, Tone) and read `Courses/_learning/Learner Profile.md` and `Courses/_learning/Teaching Style.md` (for course overrides and question format). `VL` means the engine command in the method skill.
 
 2. **Week ahead.** If this is the first `teach` or `quiz` run of a new week, give the week-ahead overview first (method, Week ahead).
 
@@ -15,15 +15,16 @@ Run a retrieval session for `$ARGUMENTS` (default: `mixed 8`).
    - Take `n` items (default 8). Include every due redo first, then the due nodes in order, which weights them towards older and previously failed nodes.
    - For `mixed`, interleave courses: never two items from the same module in a row when avoidable.
    - If fewer than `n` are due, say how many and run only those. Do not pad with unseen material; that is what `teach` is for.
+   - `due` never lists proofs: they are practised on the proof track (`teach <course> proofs`). If `VL proofs mixed` shows proofs due, say how many at the close.
 
 4. **Ask, one item at a time,** with **no course, module or topic labels**: not in the question, options or preamble.
-   - Build each question from the node's note (for a card, its prompt and answer, checked against its source), its type set by the node's level: `learning` gets recall from a fresh cue; `secure` gets a near-miss twin, a hypothesis-dropping question or an application in an unfamiliar setting; a node due to become `mastered` gets a teach-back (method).
+   - Build each question from the node's note (for a card, its prompt and answer, checked against its source), its type set by the node's level: `learning` gets recall from a fresh cue; `secure` gets a near-miss twin, a hypothesis-dropping question or an application in an unfamiliar setting; a node due to become `mastered` gets a teach-back (method). Never ask for a proof to be written: for a theorem, at most its proof's key idea in one line.
    - Adjust as you go: a clean pass makes the next item one notch harder (less familiar wording, or combined with an earlier item's idea), a pass that needed a hint holds, a miss makes the next one easier.
-   - Mark per the method: the recall stage for `unseen` and `learning` nodes; from `secure` up, classify each miss (Classify every miss) and retest wrong-tool and misconception misses at the end.
+   - Mark per the method (Marking): the recall stage for `unseen` and `learning` nodes; from `secure` up, sort each miss and retest wrong-tool and misconception misses at the end.
    - A redo reworks the logged mistake with fresh numbers, and it is labelled "(generated)" in the log.
-   - Multiple choice goes through `AskUserQuestion`. Proofs and precise statements are free response. Apply any course override in Teaching Style (for example, statements and methods only for a methods course).
+   - Multiple choice goes through `AskUserQuestion`. Precise statements are free response. Apply any course override in Teaching Style (for example, statements and methods only for a methods course).
    - For multi-step problems, the learner restates the problem from the stem first.
-   - Confidence comes with the answer (method, Quiz design), then the verdict, then name the node. Flag overconfidence.
+   - Confidence comes with the answer (method, Questions), then the verdict, then name the node. Flag overconfidence.
    - No teaching: on a wrong answer, point at the first broken line, give the correct statement in one or two lines, and move on. Offer `teach` for that node at the end, and name its unit's primer if it has one (`VL graph <COURSE>` gives the node's `unit`, `VL unit <COURSE> <unit>` its `primer`), rather than re-explaining.
 
 5. **Record.**
@@ -35,4 +36,4 @@ Run a retrieval session for `$ARGUMENTS` (default: `mixed 8`).
    - Write `Courses/_learning/sessions/YYYY-MM-DD <course|mixed> quiz.md` (`type: session`, the method's format, no plan diagram).
    - Run `VL roadmap all` (or the one course) to refresh the colours.
    - Append a `quiz | <course|mixed>` entry to `_meta/log.md`.
-   - Report in chat: the score, overconfident misses, notes that dropped a level, and what is due next.
+   - Report in chat: the score, overconfident misses, notes that dropped a level, what is due next, and the number of proofs due (`VL proofs mixed`).

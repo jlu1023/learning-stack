@@ -17,7 +17,7 @@ Walk the vault and produce a structured report. Change nothing.
 10. **Topic tags:** any hashtag in use that is not in the tag registry in `CLAUDE.md`.
 11. **Frontmatter drift:** notes missing the required fields for their type (see `CLAUDE.md`), for example a theorem with no `depends_on`.
 12. **Primers:** run `VL check-primer all` (`VL` is the engine command in the `method` skill) and list every failing primer and every unit without one.
-13. **Review backlog:** from `VL due mixed`, the number of overdue notes and due redos.
+13. **Review backlog:** from `VL due mixed`, the number of overdue notes and due redos; from `VL proofs mixed`, the number of proofs due.
 
 Output, severity-ordered:
 
