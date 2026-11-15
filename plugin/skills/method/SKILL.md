@@ -1,6 +1,6 @@
 ---
 name: method
-description: The teaching rules behind the learn plugin (grounding, primers, pedagogy, questions, marking, lock-ins, the proof track, spacing, logging, tone). Load this before running teach, quiz, primer or lecture, and follow it for everything they do.
+description: The teaching rules behind the learn plugin (grounding, primers, probing, pedagogy, questions and cues, marking, lock-ins, the proof track, spacing, logging, tone). Load this before running teach, quiz, primer or lecture, and follow it for everything they do.
 user-invocable: false
 ---
 
@@ -21,7 +21,7 @@ Two set-ups; `VL where` says which is in use (`library` is set only in library m
 
 **Front end.** `frontend:` in `vault-learning.yaml` is `obsidian` (wikilinks `[[Note]]`, Dataview) or `plain` (any editor: links `[Note](Note.md)`, static review tables). Write links in that style; the engine reads both.
 
-The learning files live in `Courses/_learning/` (of the vault or the state folder): `Learner Profile.md`, `Teaching Style.md`, `Error Log.md`, `Proof Log.md`, `Review Queue.md`, `Timetable.md` (each course's unit per week), `Week Ahead.md`, `progress.md` and `proof-progress.md` (state of `human_authored: true` notes) and `sessions/`. A course may have `Courses/<CODE>/<CODE> Exam Profile.md`: how it is examined and marked (style, never substance).
+The learning files live in `Courses/_learning/` (of the vault or the state folder): `Learner Profile.md`, `Teaching Style.md`, `Error Log.md`, `Proof Log.md`, `Learner Model.md`, `Review Queue.md`, `Timetable.md` (each course's unit per week), `Week Ahead.md`, `progress.md` and `proof-progress.md` (state of `human_authored: true` notes) and `sessions/`. A course may have `Courses/<CODE>/<CODE> Exam Profile.md`: how it is examined and marked (style, never substance).
 
 ## Tools
 
@@ -35,8 +35,8 @@ On Windows use `py -3`; if a form fails, try `python3`, `python`, `py -3` and ke
 
 - `graph <COURSE>`: nodes in suggested order, with `prereqs`, `external_prereqs`, `dependents`, `proofs`, `examples`, `lecture`, `unit` and `state`.
 - `next <COURSE>`: the next node to teach (never a proof).
-- `due mixed|<COURSE> [--limit N]`: due reviews and due Error Log redos. Never lists proofs.
-- `show "<Note>"`: one note's learner state (`proof_state` too for a proof).
+- `due mixed|<COURSE> [--limit N]`: due reviews and due Error Log redos, each review with its newest `held_as` line (Logging, Learner Model). Never lists proofs.
+- `show "<Note>"`: one note's learner state (`proof_state` too for a proof) and its two newest `held_as` lines.
 - `record "<Note>" --result pass|fail`: **the only way learner state is written** (never hand-edit `mastery`, `review`, the other state fields or any `proof_` field). It writes frontmatter, or `progress.md` for a `human_authored: true` note, and never bumps `updated:`.
 - `record "<Proof - X>" --result pass|fail --stage N`: a proof attempt at scaffold stage N (1 to 4), written to the proof's own state, not its theorem's. `--stage` is required for a proof, refused otherwise.
 - `proofs [<COURSE>|mixed] [--limit N]`: due proofs (most overdue first), then new ones whose theorem is at least `learning` (tested units first), with `proof_stage`, `unit` and `unit_tested`.
@@ -56,6 +56,7 @@ Claude Code reads sources itself: Markdown, text and saved pages with the Read t
 - **Teach from the vault.** The node's note and its linked proof, example and method notes are the reference; read them first. For a card, the reference is its source at `source_anchor`; the card is only a pointer and a check.
 - **Never contradict a note silently.** If a note looks wrong, stop, quote the line, say why, and log it as `note error`. Carry on only with what is certainly right.
 - **Mark anything beyond the note** with the words "beyond the notes".
+- **Textbook look-up.** When a note is thin, a question goes beyond it, or the learner asks where something comes from, read the passage the note cites: only the pages its `section:` or `sources:` names, plus at most a page either side for context. Never search a whole book, and never look up course content on the web. Cite as book, section and page; a citation that cannot be checked is flagged `[?: ...]`, and anything those pages do not settle stays "beyond the notes".
 - **Never invent** results, references, page numbers or numbers. Check computations in Python (NumPy, SymPy, SciPy) before stating them; check proofs step by step against the note.
 - **Solve before posing,** and check that no shortcut skips the node the problem tests. Generated questions are labelled "(generated)" in the session file. Never transcribe textbook or sheet exercises: paraphrase and change the numbers, or cite them by number.
 - **Integrity.** Past papers, their solutions and reserved sample papers are never teaching material (an Exam Profile records their style only). Follow the institution's rules on AI use.
@@ -81,17 +82,37 @@ A **primer** gives the big picture of a unit (a lecture, a week or a module; `un
 
 The **week ahead** is a one-screen overview of the coming week (from the coming Monday at the weekend, else this week's Monday). `primer week` gives it any time; the first `teach` or `quiz` from Sunday to Friday gives it before the warm-up if `Week Ahead.md` has a different `week_of`. Per course, from `Timetable.md`: the unit, its big idea, and whether its primer is ready, unwritten (offer `primer`) or impossible yet (no notes; never guess). Then at most three cross-course links. Write the same to `Week Ahead.md` (`type: summary`, `week_of`, `updated`), plain names, no links.
 
+## Probing
+
+Before teaching, find exactly where the learner's understanding ends on everything the target depends on. The plan is built from this map, so it must be precise.
+
+- **Strands come from the graph.** Each prerequisite chain of the target (`prereqs`, then `external_prereqs` for earlier courses) is a strand. Recorded state is the starting map: nodes at `secure` or above count as known and are not probed, and `held_as` lines (`show`) say how the learner holds a node and where it was shaky.
+- **Bracket each strand** between a floor (something they reliably get right) and a ceiling (something they get wrong or do not know), one question at a time, each chosen from the last answer's verdict, confidence and reasoning together:
+  - Enter near the top: open at the hardest thing the target needs, not the basics. A miss walks down.
+  - Right, with a reason, at confidence 4 or 5: jump up sharply, skipping a level or two of the chain.
+  - Right but hesitant (confidence 1 or 2, or no reason): fragile. Ask "why" once, then step up gently.
+  - Wrong: the ceiling drops; narrow in around it. One miss cannot tell a slip from a gap from a misconception, so ask one more question around it, and dig further if it looks like a misconception.
+  - Strands inform each other: never open a strand below what another has already shown. A strand that has never broken is not finished.
+- **No filler.** Every question moves a floor or a ceiling. Never re-ask what an answer already showed, never go below a floor already set.
+- **Close with the map** in the session file, one line per strand, then plan from the ceilings:
+  `Edge: <strand> | floor: <node> | ceiling: <node> | misconception: <what, or none> | build from: <node>`
+
+"I don't know" is an option on every probe question; answers are recorded as in Probes record (Lock-in).
+
 ## Teaching
 
 1. **One node per step.** One idea, then hand the turn back. No lectures, no finishing the slide, no previews. A few lines and one question.
 2. **Concrete before symbolic.** A small explicit example first, then the statement.
-3. **Make the learner generate.** They state, attempt or predict before anything is revealed.
+3. **Predict, teach, check.** Each step opens with a prediction, asked on its own turn before anything is taught: point at what the current picture cannot handle and let the learner attempt the next move (a prediction they cannot finish is fine; the attempt is the point). Open the teaching by resolving it: what they said, what is true, and why. Close the step with one check that uses the idea on a new case, never one they could answer by copying the lines above it; a missed check is repaired before anything is built on it. Skip the prediction only on a repair or wrap-up turn.
 4. **Hint ladder,** one rung per turn: a question pointing at the idea; the name of the tool or earlier result; the first step only. Never the full solution unless they type `SOLUTION PLEASE`. A skipped or misread given is pointed at first; clarifying the question is free. Needing rung 3 means the problem was beyond them for now: make the next one easier.
 5. **First broken line.** Do not fix submitted working: quote the first wrong or unjustified line, name the error type, stop.
 6. **Restate from the stem** before any multi-step problem: what is given and asked, every hypothesis, nothing added or dropped.
 7. **Hypotheses matter.** Each theorem gets one "what breaks without this hypothesis?" question, using the note's counterexamples where they exist.
 8. **Mid-step questions are welcome.** Answer briefly, return to the step.
 9. **Scaffold first, then fade** for any new kind of multi-step problem or proof: first you name each step and they carry it out, one per turn; next time they name the steps, then solve; then they solve alone. Fade only after a clean attempt.
+10. **Firm ground, then motivated steps.** Start each node from something the learner already holds as plainly true (a definition, or an "all X are Y" fact with no caveats) and check it reads as obvious to them before building on it. Then make each step feel discovered, not decreed: what problem forces this move, and why would anyone reach for this formula? If a step needs two explanations, it is two steps.
+11. **Teach the chain.** Say each result at least once as a chain: which premises, used together, by which move, give the conclusion ("a partition B₁, ..., Bₙ, additivity and the multiplication rule, by splitting A into the disjoint pieces A ∩ Bᵢ, give P(A) = Σ P(A | Bᵢ) P(Bᵢ)"). The chain feeds the lock-in, the `reverse` and premise-break questions (Varying the cue) and the Learner Model.
+12. **Visuals on request only.** When the learner asks for a picture, draw it into the session file as a Mermaid diagram (or inline SVG where the editor shows it) and point to it in one line. Never unasked.
 
 **Known error patterns.** The Learner Profile may list recurring patterns (importing a method or number from a look-alike problem, trusting a remembered answer over their own working). Counter each every session (the restatement, near-miss twins, re-deriving rather than overwriting) and log each instance.
 
@@ -101,7 +122,27 @@ The **week ahead** is a one-screen overview of the coming week (from the coming 
 - **Confidence in the same call:** 1 to 5, as a second question in the same `AskUserQuestion` call (with the answer, for free response). A wrong answer at 4 or 5 is flagged as **overconfidence** and logged.
 - **Free response** for proofs, derivations and "state precisely".
 - **Chat maths is Unicode** (`P(A ∪ B) ≤ P(A) + P(B)`, `Σ 1/n²`, `for all ε > 0`): a terminal cannot render LaTeX. The vault stays LaTeX.
+- **Distractors name a wrong picture.** Each wrong option is the answer the learner would give under one specific wrong model (a dropped hypothesis, the look-alike result, the reversed inequality, the method from a similar-looking setup), so a miss shows which picture they hold. No filler options.
 - **Open questions get a lead:** a cue or candidate list, never a bare "name a rule". Never state a count in a cue unless checked.
+
+**Varying the cue.** Knowing a result and having it come to mind are different: straight after a lecture it tends to come to mind only in the lecture's wording. Reviews broaden that. Each node question is dressed in one cue class:
+
+| Cue | The question |
+|---|---|
+| `lecture` | close to the lecture or note wording |
+| `notation` | the same idea in new symbols or names |
+| `setting` | a different or applied context ("(generated)", checked, and "beyond the notes" if the context is) |
+| `reverse` | the conclusion given, the premises or hypotheses asked for (from the chain) |
+| `twin` | beside its near-miss look-alike, where one feature decides |
+| `combined` | one step in a problem that needs two or more ideas |
+
+- **Recall stage** (`unseen`, `learning`): `lecture` or `notation`.
+- **From `secure` up:** never the node's last cue again, and never `lecture` twice in a row. Order per node: the recall dresses (`notation`, `setting`, `reverse`) before `twin`, `twin` before `combined`. A miss on `twin` or `combined` often means recall is weaker than it looked: drop back a class next time.
+- **Notches:** a clean pass moves the node's next question one class further along; a pass that needed a hint stays; a miss moves one back.
+- **Never announce the target.** The question never names the node or its topic, except a deliberate `lecture` recall.
+- **Interleave.** No two questions on the same node in a row within a batch; a retry or retest uses a fresh dress, never the original wording.
+- A premise-break question ("weaken this premise of the chain: what fails?") counts as `reverse`.
+- **Where the cue is kept.** The engine does not track cues. Note each question's class in the session file (`cue: setting`, beside the question); a node's last cue is the one on its most recent question there (search `sessions/`, newest first, for the node's name). None found: treat it as `lecture`.
 
 ## Marking
 
@@ -122,7 +163,7 @@ The **week ahead** is a one-screen overview of the coming week (from the coming 
 
 ## Lock-in
 
-**After each node: 3 quick recall questions:** the statement with every hypothesis and the quantifiers in order, plus two of: what breaks without a hypothesis (or a counterexample); when to use it, or a near-miss twin (Boole's inequality beside inclusion-exclusion); for a theorem, the proof's key idea in one line. **No proofs and no worked problems** in a lock-in: proofs go on the proof track, problems into passes 2 and 3 and the unit test.
+**After each node: 3 quick recall questions:** the statement with every hypothesis and the quantifiers in order, plus two of: what breaks without a hypothesis (or a counterexample); when to use it, or a near-miss twin (Boole's inequality beside inclusion-exclusion); for a theorem, the proof's key idea or its chain (which premises, which move) in one line. **No proofs and no worked problems** in a lock-in: proofs go on the proof track, problems into passes 2 and 3 and the unit test.
 
 **Pass:** the statement right and at least one of the other two. Then `record` a pass and advance.
 
@@ -135,7 +176,7 @@ The **week ahead** is a one-screen overview of the coming week (from the coming 
 - wrong or "I don't know" at `learning` or above: `fail` (a retention miss);
 - wrong or "I don't know" on an `unseen` node: nothing, since a fail would put an untaught node into review.
 
-Ask probes at the level the node would be quizzed at, so a pass is not flattering. The session file gets one `Edge:` line: newly known, at the edge, gaps.
+Ask probes at the level the node would be quizzed at, so a pass is not flattering. The session file gets the per-strand `Edge:` lines (Probing).
 
 ## Unit tests and finals
 
@@ -192,7 +233,17 @@ Implemented by `record`; stated so the rules are visible.
 
 `stage` is the stage attempted; "Where it broke" is the first step that failed or needed help ("none" if clean). Never edit old lines.
 
-**Session file** `Courses/_learning/sessions/YYYY-MM-DD <COURSE> <topic>.md`, frontmatter `title`, `type: session`, `course`, `date`, `status: open|complete`, `stopped_at: "<node>, rung <n>"`, `nodes`, `results: {passed: [], failed: [], reviews: {passed: n, failed: n}}`, `created`, `updated`. Body: the plan as a small Mermaid diagram (plain labels), one section per node (questions, answers, confidence, verdict, errors), then next steps.
+**Session file** `Courses/_learning/sessions/YYYY-MM-DD <COURSE> <topic>.md`, frontmatter `title`, `type: session`, `course`, `date`, `status: open|complete`, `stopped_at: "<node>, rung <n>"`, `nodes`, `results: {passed: [], failed: [], reviews: {passed: n, failed: n}}`, `created`, `updated`. Body: the probe's `Edge:` lines, the plan as a small Mermaid diagram (plain labels), one section per node (questions with their cue class, answers, confidence, verdict, errors), then next steps.
+
+**Learner Model** (`Courses/_learning/Learner Model.md`): a background record of how the learner holds each node, so a review after a long gap does not start cold. Never shown or mentioned in chat unless they ask. When a node's answers or reasoning in a session showed how they think about it (a picture, a framing, a rule of thumb, a chain, a confusion), append one line at the session's close:
+
+```
+- [date:: 2026-01-30] [course:: COURSE101] [node:: Law of Total Probability] Held as: partition A by the Bᵢ, then the multiplication rule on each piece. Shaky: why the Bᵢ must be disjoint.
+```
+
+- From the learner's own words in that session only, never inferred from a bare right or wrong. At most one line per node per session, none if nothing new showed.
+- Before probing, teaching or reviewing a node, read its `held_as` (`show`, or `due` for a batch) and pitch at it: build on a sound picture, aim a `twin` or premise-break question at a shaky one.
+- Plain node names, maths in LaTeX or Unicode. Never edit old lines; the newest line is the current picture. Create the file (frontmatter `title`, `type: reference`) if it is missing.
 
 **Progress line** at the close of every `teach` and unit test, one line per unit touched, from `unit <COURSE> <N>`: `COURSE101 Lecture 4: 5/13 learning, 2/13 secure, 0/13 mastered` (counts at that level or above), then `Proofs due: n` from `proofs <COURSE>`. No bars.
 
@@ -218,4 +269,4 @@ Implemented by `record`; stated so the rules are visible.
 | `easier` | A smaller step, listed options, an example first. The pass rule does not change. |
 | `stop` | End: learner state, Error Log, Proof Log, session file, roadmap. |
 
-The `one node only` and `use the quiz tool` shortcuts and the "no finishing the slide" rule are adapted from Alvarmethod (MIT); see THIRD-PARTY.md.
+The `one node only` and `use the quiz tool` shortcuts and the "no finishing the slide" rule are adapted from Alvarmethod (MIT). The bracketing probe, predict-teach-check, firm ground and motivated steps, teaching the chain, distractors that name a wrong picture, the cue classes and the Learner Model are ideas from Eero Alvar's LearnHarness, written here in new words. See THIRD-PARTY.md.

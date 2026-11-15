@@ -27,6 +27,7 @@ FIELDS = ["mastery", "mastery_since", "last_quizzed", "review", "review_interval
 LEARNING_DIR = "Courses/_learning"
 PROGRESS_REL = f"{LEARNING_DIR}/progress.md"
 ERROR_LOG_REL = f"{LEARNING_DIR}/Error Log.md"
+LEARNER_MODEL_REL = f"{LEARNING_DIR}/Learner Model.md"
 
 
 def _date(x) -> dt.date | None:
@@ -187,4 +188,27 @@ def read_error_log(v: Vault) -> list[dict]:
         if ENTRY_RE.match(line):
             d = {k: val.strip() for k, val in FIELD_RE.findall(line)}
             out.append(d)
+    return out
+
+
+# ---------- learner model ----------
+def read_learner_model(v: Vault) -> dict[str, list[dict]]:
+    """Note name -> its Learner Model lines, oldest first, as {date, text}.
+
+    The Learner Model holds dated lines on how the learner holds a node, in their own
+    words, appended by the teaching session (never by the engine):
+    `- [date:: YYYY-MM-DD] [course:: CODE] [node:: Name] Held as: ... Shaky: ...`.
+    The text is everything after the last field. Lines without a node are skipped."""
+    if not v.exists(LEARNER_MODEL_REL):
+        return {}
+    out: dict[str, list[dict]] = {}
+    for line in v.read_text(LEARNER_MODEL_REL).splitlines():
+        m = ENTRY_RE.match(line)
+        fields = list(FIELD_RE.finditer(line))
+        node = next((f.group(2).strip() for f in fields if f.group(1) == "node"), "")
+        if not m or not node:
+            continue
+        out.setdefault(node, []).append({"date": m.group(1), "text": line[fields[-1].end():].strip()})
+    for lines in out.values():
+        lines.sort(key=lambda x: x["date"])      # stable: same-day lines keep file order
     return out

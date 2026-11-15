@@ -18,8 +18,8 @@ Run a retrieval session for `$ARGUMENTS` (default: `mixed 8`).
    - `due` never lists proofs: they are practised on the proof track (`teach <course> proofs`). If `VL proofs mixed` shows proofs due, say how many at the close.
 
 4. **Ask, one item at a time,** with **no course, module or topic labels**: not in the question, options or preamble.
-   - Build each question from the node's note (for a card, its prompt and answer, checked against its source), its type set by the node's level: `learning` gets recall from a fresh cue; `secure` gets a near-miss twin, a hypothesis-dropping question or an application in an unfamiliar setting; a node due to become `mastered` gets a teach-back (method). Never ask for a proof to be written: for a theorem, at most its proof's key idea in one line.
-   - Adjust as you go: a clean pass makes the next item one notch harder (less familiar wording, or combined with an earlier item's idea), a pass that needed a hint holds, a miss makes the next one easier.
+   - Build each question from the node's note (for a card, its prompt and answer, checked against its source), dressed in a cue class per the method (Varying the cue): `learning` gets `lecture` or `notation`; from `secure` up, a class other than the node's last cue (from the session files), the recall dresses before `twin` before `combined`, with `reverse` and premise-break questions from the node's chain; a node due to become `mastered` gets a teach-back (method). Pitch it at the item's `held_as` line when there is one. Never ask for a proof to be written: for a theorem, at most its proof's key idea or chain in one line.
+   - Adjust as you go: a clean pass moves that node one class further along next time, a pass that needed a hint holds, a miss moves it back. Multiple-choice distractors each name a wrong picture (method, Questions).
    - Mark per the method (Marking): the recall stage for `unseen` and `learning` nodes; from `secure` up, sort each miss and retest wrong-tool and misconception misses at the end.
    - A redo reworks the logged mistake with fresh numbers, and it is labelled "(generated)" in the log.
    - Multiple choice goes through `AskUserQuestion`. Precise statements are free response. Apply any course override in Teaching Style (for example, statements and methods only for a methods course).
@@ -28,7 +28,8 @@ Run a retrieval session for `$ARGUMENTS` (default: `mixed 8`).
    - No teaching: on a wrong answer, point at the first broken line, give the correct statement in one or two lines, and move on. Offer `teach` for that node at the end, and name its unit's primer if it has one (`VL graph <COURSE>` gives the node's `unit`, `VL unit <COURSE> <unit>` its `primer`), rather than re-explaining.
 
 5. **Record.**
-   - Run `VL record "<node>" --result pass|fail` after each item.
+   - Run `VL record "<node>" --result pass|fail` after each item, and note its cue class beside the question in the session file.
+   - At the close, append a Learner Model line for each node whose answers showed how the learner holds it (method, Logging). Silent: do not mention it in chat.
    - Append each mistake to `Courses/_learning/Error Log.md` in the method's format.
    - When a redo is answered correctly, append ` [redone:: YYYY-MM-DD]` to its Error Log line.
 

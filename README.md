@@ -59,7 +59,7 @@ Run `/learn:setup` (or `/learn:connect`) in your notes folder. It reads your Mar
 
 ## How it teaches
 
-The loop is Eero Alvar's (probe, plan, teach one node, lock in), built on retrieval practice, spacing, interleaving, generation and hints rather than answers. Learning and recall are kept apart: lock-ins and reviews are quick recall, and writing proofs is practised on its own spaced track, from step by step to solo. [LEARNING-METHOD.md](LEARNING-METHOD.md) explains each piece and its evidence. You tune it to yourself in `Courses/_learning/Teaching Style.md`, including a different style per course (proof-led, methods-led or applied), each matched to how that course is examined.
+The loop is Eero Alvar's (probe, plan, teach one node, lock in), built on retrieval practice, spacing, interleaving, generation and hints rather than answers. The probe brackets each prerequisite chain between what you know and what you miss; each step is predict, teach, check; reviews vary how each question is cued; and a quiet Learner Model keeps how you hold each idea, in your own words. Learning and recall are kept apart: lock-ins and reviews are quick recall, and writing proofs is practised on its own spaced track, from step by step to solo. [LEARNING-METHOD.md](LEARNING-METHOD.md) explains each piece and its evidence. You tune it to yourself in `Courses/_learning/Teaching Style.md`, including a different style per course (proof-led, methods-led or applied), each matched to how that course is examined.
 
 ## Integrity
 
@@ -80,6 +80,6 @@ SETUP.md  LEARNING-METHOD.md  INTEGRITY.md  CONTRIBUTING.md  CHANGELOG.md  THIRD
 
 ## Credits
 
-Built by James Lu. The learning loop is Eero Alvar's ([How I Use AI to Learn Things](https://youtu.be/kzcI5F4tGiU)); some of the teaching rules are adapted from [Alvarmethod](https://github.com/vasanthsreeram/Alvarmethod) under the MIT licence (see [THIRD-PARTY.md](THIRD-PARTY.md)).
+Built by James Lu. The learning loop is Eero Alvar's ([How I Use AI to Learn Things](https://youtu.be/kzcI5F4tGiU)); some of the teaching rules are adapted from [Alvarmethod](https://github.com/vasanthsreeram/Alvarmethod) under the MIT licence, and some of the teaching ideas come from Eero Alvar's [LearnHarness](https://github.com/amosblomqvist/learnharness), rewritten in new words (see [THIRD-PARTY.md](THIRD-PARTY.md)).
 
 MIT licence: see [LICENSE](LICENSE).

@@ -30,6 +30,10 @@ SOFTWARE.
 
 The learning loop itself is Eero Alvar's, from his video "How I Use AI to Learn Things" (14 August 2026, https://youtu.be/kzcI5F4tGiU). No part of the video or its captions is included here.
 
+## LearnHarness (ideas only)
+
+Several teaching ideas in `plugin/skills/method/SKILL.md` and the `teach` and `quiz` skills come from Eero Alvar's LearnHarness (https://github.com/amosblomqvist/learnharness): the bracketing probe with a floor and a ceiling per prerequisite strand, predict-teach-check, starting from firm ground with motivated steps, teaching each result as a chain, distractors that each name a wrong picture, the cue classes for reviews, and the record of how the learner holds each node. Only the ideas are used, described here in new words; no text or code from LearnHarness is included in this repository.
+
 ## Software used, not included
 
 The engine needs nothing beyond Python's standard library. These optional tools are installed separately and keep their own licences:

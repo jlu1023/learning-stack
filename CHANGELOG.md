@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.0
+
+- The probe brackets each prerequisite strand between a floor and a ceiling: it opens near the top of what the target needs, jumps up after a confident, reasoned answer, steps gently after a hesitant one and narrows in after a miss, with no filler questions. The session file gets one `Edge:` line per strand (floor, ceiling, misconception, where to build from).
+- Teaching: each step is predict, teach, check (a prediction on its own turn, then the teaching resolves it, then one check on a new case); each node starts from firm ground with motivated steps; each result is said once as a chain (premises, move, conclusion); visuals are drawn into the session file only when asked for.
+- Questions: every multiple-choice distractor names a specific wrong picture, and reviews vary their cue through six classes (`lecture`, `notation`, `setting`, `reverse`, `twin`, `combined`), never the same one twice running, moving along on a clean pass and back on a miss. The cue class is noted per question in the session file; the engine does not track it. Lock-ins may ask a theorem's chain instead of its proof's key idea.
+- The Learner Model (`Courses/_learning/Learner Model.md`, new in the template and in connected libraries): one dated line per node per session, in the learner's own words, on how they hold it and where it was shaky. Written silently at the close of `teach` and `quiz`, read before probing, teaching or reviewing that node.
+- Engine: `show` adds the note's two newest `held_as` lines and `due` adds each item's newest one, read from the Learner Model (never written by the engine).
+- Textbook look-up: when a note is thin, read only the pages it cites, plus at most a page either side; never search a whole book.
+- These ideas come from Eero Alvar's LearnHarness, rewritten in new words (THIRD-PARTY.md). LEARNING-METHOD.md gains the evidence for prediction, varied cues and diagnostic distractors.
+
 ## 1.4.0
 
 - Learning and recall are separate. A lock-in is now three quick recall questions: the statement with every hypothesis, plus two of what breaks without a hypothesis, when to use it (or a near-miss twin), and the proof's key idea. No proofs and no new problems in lock-ins or reviews; problems come in later passes and unit tests.

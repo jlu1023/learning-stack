@@ -202,6 +202,18 @@ One line per proof attempt on the proof track, appended by `/learn:teach <course
 
 ## Entries
 """,
+    "Courses/_learning/Learner Model.md": """---
+title: "Learner Model"
+type: reference
+---
+
+# Learner Model
+
+How the learner holds each card, in their own words, appended by `/learn:teach` and `/learn:quiz` at a session's close and read back by `show` and `due`:
+`- [date:: YYYY-MM-DD] [course:: CODE] [node:: Card Name] Held as: ... Shaky: ...`
+
+## Entries
+""",
     "Courses/_learning/progress.md": """---
 title: "progress"
 type: reference

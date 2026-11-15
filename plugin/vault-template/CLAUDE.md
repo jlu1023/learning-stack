@@ -21,7 +21,7 @@ This vault holds course notes in small linked pieces, plus the learner's progres
 | Generated roadmap | `Courses/<CODE>/<CODE> Roadmap.md` (never hand-edit) |
 | Unit primer | `Courses/<CODE>/<N> <Module>/<CODE> <Unit> <N> Overview - <Title>.md` |
 | Exam Profile | `Courses/<CODE>/<CODE> Exam Profile.md` |
-| Learning files | `Courses/_learning/` (Learner Profile, Teaching Style, Error Log, Proof Log, Review Queue, Timetable, Week Ahead, progress, sessions/) |
+| Learning files | `Courses/_learning/` (Learner Profile, Teaching Style, Error Log, Proof Log, Learner Model, Review Queue, Timetable, Week Ahead, progress, sessions/) |
 | Raw material | `Sources/courses/<CODE>/` (slides, notes, PDFs), `Sources/transcripts/` (lecture transcripts): both excluded from git |
 | Unsorted capture | `Inbox/` |
 | Operation log, index | `_meta/log.md` (appended), `_meta/Vault Index.md` (generated) |
@@ -116,7 +116,7 @@ proof_solo: 0                                    # consecutive solo (stage 4) pa
 - **Style follows `frontend:` in `vault-learning.yaml`.** `obsidian`: wikilinks, `[[Note]]` and `[[Note|text]]`. `plain` (any other editor): relative Markdown links, `[Note](../2%20Module/Note.md)`, with spaces as `%20`; in frontmatter too: `depends_on: ["[Note](Note.md)"]`. The engine resolves both styles, so a vault can switch, but write new links in the configured one.
 - Every concept, theorem and method note has 3 to 6 deliberate outbound wikilinks, at least one `depends_on` or `used_in` entry, and a place in its module MOC.
 - Theorems link to their proof and to every definition in their statement; proofs link back to the theorem and to each result a step relies on; definitions list the theorems that use them under "Used in".
-- **Reports never wikilink.** Logs, session files, the Error Log, the Proof Log, roadmaps' suggested order, lint reports and the Vault Index name notes in plain text, so they add no false edges to the graph.
+- **Reports never wikilink.** Logs, session files, the Error Log, the Proof Log, the Learner Model, roadmaps' suggested order, lint reports and the Vault Index name notes in plain text, so they add no false edges to the graph.
 
 ## Templates
 

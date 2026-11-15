@@ -3,8 +3,8 @@
   roadmap [COURSE|all] [--dry-run] [--no-validate]   generate roadmaps into the vault
   graph COURSE                                       course graph as JSON (for /teach)
   next COURSE                                        next node to teach (JSON)
-  due [COURSE|mixed] [--limit N]                     due reviews and Error Log redos (JSON)
-  show NOTE                                          learner state of one note (JSON)
+  due [COURSE|mixed] [--limit N]                     due reviews (with each one's newest held_as) and Error Log redos (JSON)
+  show NOTE                                          learner state of one note and its newest held_as lines (JSON)
   record NOTE --result pass|fail [--stage 1-4]       apply a lock-in or review result (--stage: proofs only)
   proofs [COURSE|mixed] [--limit N]                  the proof track: due and new proofs (JSON)
   index [--dry-run]                                  regenerate _meta/Vault Index.md (also run by `roadmap all`)
@@ -36,7 +36,7 @@ from .primer_check import check_all
 from .proofs import apply_proof_result, proofs_due, read_proof_progress, read_proof_state, write_proof_state
 from .units import CourseUnits
 from .render import OBSIDIAN_MARKERS, PLAIN_MARKERS, Renderer
-from .state import (LEVELS, apply_result, read_error_log, read_progress,
+from .state import (LEVELS, apply_result, read_error_log, read_learner_model, read_progress,
                     read_state, write_state)
 from . import config, miniyaml
 from .library import connect as connect_library, scan as library_scan
@@ -298,6 +298,7 @@ def due_items(v: Vault, which: str | None, today: dt.date, limit: int) -> dict:
     courses = roadmap_courses(v) if mixed else [_course(v, canonical_code(which))]
     progress = read_progress(v)
     errors = read_error_log(v)
+    model = read_learner_model(v)
     err_count = {}
     for e in errors:
         err_count[e.get("node", "")] = err_count.get(e.get("node", ""), 0) + 1
@@ -314,7 +315,8 @@ def due_items(v: Vault, which: str | None, today: dt.date, limit: int) -> dict:
                 name = cg.name(n)
                 items.append({"course": code, "name": name, "path": n, "state": s.to_json(),
                               "overdue_days": (today - s.review).days,
-                              "errors_logged": err_count.get(name, 0)})
+                              "errors_logged": err_count.get(name, 0),
+                              "held_as": (model.get(name) or [{}])[-1].get("text")})
     items.sort(key=lambda x: (-(x["overdue_days"] + 3 * x["errors_logged"]), x["state"]["last_quizzed"] or ""))
     capped = 0
     if mixed:
@@ -493,7 +495,8 @@ def doctor_json() -> dict:
 
 def show_json(v: Vault, name: str) -> dict:
     rel = _find_note(v, name)
-    out = {"note": rel, "state": read_state(v, rel).to_json(), "human_authored": v.note(rel).human_authored}
+    out = {"note": rel, "state": read_state(v, rel).to_json(), "human_authored": v.note(rel).human_authored,
+           "held_as": read_learner_model(v).get(Path(rel).stem, [])[-2:]}
     if kind_of(v.note(rel)) == "proof":
         out["proof_state"] = read_proof_state(v, rel).to_json()
     return out

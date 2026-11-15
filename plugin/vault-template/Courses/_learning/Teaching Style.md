@@ -28,7 +28,7 @@ Everything below is a working default. Rewrite it in your own words as you learn
 4. **Theorems.** First ask how I could have discovered the result. Then I predict the statement and say where each hypothesis is used, and learn the proof's key idea.
 5. **Connect.** Link the node to the earlier nodes it builds on, and to other courses where the link is real.
 6. **Application.** A problem that needs the idea, then the same idea in a different setting: what carries over, what fails, and why.
-7. **Lock-in (recall only).** The statement word for word, then two quick recall questions: the role of a condition, when to use it, or for a theorem the proof's key idea in one line. No proofs and no new problems.
+7. **Lock-in (recall only).** The statement word for word, then two quick recall questions: the role of a condition, when to use it, or for a theorem the proof's key idea or its chain in one line. No proofs and no new problems.
 
 ## Three passes per topic (successive relearning)
 
@@ -50,7 +50,8 @@ A failed recall in pass 2 or 3 drops the note back to pass 1. I can say `pass 1`
 
 ## Probes
 
-- Start at the definition (exact statement, the role of each condition), then examples, then a first consequence.
+- Bracket each prerequisite strand: start near the top of what the target needs, jump up when I answer confidently with a reason, and narrow in when I miss, until each strand has a floor and a ceiling.
+- Ask each node at the level it would be quizzed at: the exact statement and the role of each condition, not just a recognisable phrase.
 - A right answer without a reason counts as the edge, not as known. "I don't know" is always a valid answer.
 
 ## Proof track
