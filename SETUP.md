@@ -38,7 +38,7 @@ It checks Python, asks whether to start a new vault or use the notes already in 
 - **A new vault** is copied in from the template that ships with the plugin (it never overwrites a file that is already there), with an optional example course, `COURSE101`, so you can see every piece working.
 - **Your existing notes** are connected read-only: see [Using your own notes](#using-your-own-notes).
 
-The skills are `/learn:setup`, `/learn:teach`, `/learn:quiz`, `/learn:primer`, `/learn:roadmap`, `/learn:ingest`, `/learn:connect`, `/learn:lecture`, `/learn:query` and `/learn:lint`.
+The skills are `/learn:setup`, `/learn:teach`, `/learn:quiz`, `/learn:primer`, `/learn:roadmap`, `/learn:ingest`, `/learn:connect`, `/learn:lecture`, `/learn:query`, `/learn:lint` and `/learn:app`.
 
 ## 3. If you use Obsidian
 
@@ -72,6 +72,32 @@ The Templates core plugin is already pointed at `Templates/`.
 5. Earlier courses whose notes later ones build on go under `reference_courses` in `vault-learning.yaml`.
 
 When you are ready, delete `Courses/COURSE101/` and `Courses/PRE100/`.
+
+## 6. Optional: open Study Desk
+
+Study Desk is a local page in your browser for the same sessions, with maths typeset, a tab per course and a progress table. In Claude Code, in your study folder:
+
+```
+/learn:app
+```
+
+or, without Claude Code, from the study folder (with the plugin's folder, shown by `/plugin`, in place of `<plugin>`):
+
+```bash
+python3 <plugin>/app/serve.py          # Windows: py -3 <plugin>\app\serve.py
+```
+
+It needs nothing beyond the Python you already have. It opens `http://127.0.0.1:8030`, which only your computer can reach; type the plugin's commands at its prompt (`/learn:teach COURSE101 next`, `/learn:quiz mixed`). Stop it with `/learn:app stop` or `serve.py --stop`.
+
+**Read this first.** The tutor inside Study Desk is Claude Code running in your study folder in permission mode `auto`: it reads and edits files and runs commands there **without stopping to ask you**, because a web page cannot show Claude Code's permission prompts. To change it:
+
+```bash
+python3 <plugin>/app/serve.py --permission-mode acceptEdits     # or manual, dontAsk, plan
+```
+
+or put `{ "permission_mode": "acceptEdits" }` in `config.json` in the app's data folder (`%LOCALAPPDATA%\StudyDesk` on Windows, `~/Library/Application Support/StudyDesk` on macOS, `~/.local/share/study-desk` on Linux). In those stricter modes anything Claude Code would ask about is refused rather than asked, so add the engine rule under [Permission prompts](#permission-prompts) first, or the tutor cannot record your results.
+
+Other options: `--port 8031` (or `STUDY_DESK_PORT`), `--folder <path>`, `--background`, `--window app` (its own window in Chrome, Edge or Chromium). On Windows, `/learn:app shortcut` makes a desktop shortcut that opens the app in its own window with no console; make it again after updating the plugin. Details: [plugin/app/README.md](plugin/app/README.md).
 
 ## Reading your files
 
@@ -154,4 +180,4 @@ python3 <plugin>/engine/vl.py record "Proof - Inclusion-Exclusion" --result pass
 
 `record` on a proof note needs `--stage` (the scaffold stage attempted, 1 to 4) and writes the proof's own track; `due` lists reviews, `proofs` lists the proof track.
 
-Every command prints JSON; `--help` lists them. To run the tests, from `plugin/engine/` in a clone of this repository: `python3 -m pip install -r requirements-dev.txt`, then `python3 -m pytest`.
+Every command prints JSON; `--help` lists them. To run the tests (the engine's and Study Desk's), from `plugin/engine/` in a clone of this repository: `python3 -m pip install -r requirements-dev.txt`, then `python3 -m pytest`.

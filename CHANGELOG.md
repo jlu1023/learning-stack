@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.6.0
+
+- Study Desk, an optional local app (`/learn:app`, or `python3 <plugin>/app/serve.py` from the study folder): a page in your browser with one tab per course plus a General tab, each with its own conversation; a home table of progress per course; maths typeset with KaTeX, Mermaid diagrams, wikilinks and Markdown links that open the note beside the chat; photos of working pasted or dropped in; a style editor; and a status line with the model, the effort and your Claude usage limits.
+- It is a shell: the tutor in each tab is headless Claude Code started in the study folder, one long-lived process per tab, following the same skills and engine. The server never writes into the notes; its settings, uploads and log live in a per-user data folder.
+- The tutor runs in permission mode `auto` by default, which acts without asking; `--permission-mode`, `STUDY_DESK_PERMISSION_MODE` or the app's `config.json` choose a stricter mode. `bypassPermissions` is never accepted.
+- Standard library only, like the engine: the server is `http.server`, the chat is streamed as Server-Sent Events, and KaTeX (with its fonts), marked, DOMPurify and Mermaid are bundled, so the page loads nothing from the network (licences in THIRD-PARTY.md and `plugin/app/static/vendor/licenses/`).
+- Local only: it listens on 127.0.0.1, checks the Host and Origin of every request and requires a custom header on every write, so another web page cannot reach the tutor.
+- Works in a vault, a plain-editor vault and a connected notes folder: the folder is resolved by the engine, as for the skills. Windows extras: a desktop shortcut, a launcher with no console window, a stop script and a sharp taskbar icon.
+- Engine: `where` also lists the folder's `courses` (the app's tabs come from it).
+- Tests for the app run with the engine's, against a stand-in for the `claude` command.
+
 ## 1.5.0
 
 - The probe brackets each prerequisite strand between a floor and a ceiling: it opens near the top of what the target needs, jumps up after a confident, reasoned answer, steps gently after a hesitant one and narrows in after a miss, with no filler questions. The session file gets one `Edge:` line per strand (floor, ceiling, misconception, where to build from).

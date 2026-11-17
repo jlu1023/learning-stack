@@ -9,6 +9,13 @@ Issues and pull requests are welcome. A few house rules keep the plugin easy to 
 - **Never write outside the vault or state folder.** `Vault.write_text` refuses it; do not work around it. A connected library is read-only.
 - **Errors are JSON.** An expected failure raises `EngineError` (or one of the errors `main` catches) so the skills get `{"error": ...}` on stdout, never a traceback.
 
+## The app
+
+- **Standard library only**, like the engine: `plugin/app/` must run on a plain Python 3.10 or later. No web framework, no build step; the page's libraries are the unmodified published files in `static/vendor/`, with their licences beside them.
+- **Tests.** They run with the engine's (`python -m pytest` from `plugin/engine/`). They use a throwaway study folder and data folder and a stand-in for the `claude` command (`plugin/app/tests/fake_claude.py`); a test must never start the real Claude Code.
+- **Never write into the notes.** The server only reads them; user data goes in the per-user data folder. Nothing personal or machine-specific in the code: folders, courses and ports come from the engine, flags or the environment.
+- **Local only.** Keep the Host, Origin and custom-header checks on every route, and serve files only through `resolve_static`.
+
 ## The skills and docs
 
 - Skills live in `plugin/skills/<name>/SKILL.md`; the teaching rules are in `method`. If a rule changes, change it there and keep the other skills pointing at it.

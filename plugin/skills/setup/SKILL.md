@@ -24,3 +24,5 @@ Set the learner up in the current folder. Keep it short: a few questions, then d
 4. **Existing notes** (this folder or another): read `${CLAUDE_PLUGIN_ROOT}/skills/connect/SKILL.md` and carry out its steps for that folder (the `connect` skill only starts when the learner types it, so follow the file rather than invoking it). For a read-only, shared or synced folder, ask whether to keep the state elsewhere with `--state-dir`. Use their editor answer as the frontend, so connect does not ask again. Never write anything into their notes folder except the `_learn/` state folder.
 
 5. **Optional extras.** Only if `VL doctor` shows them missing and only in one line each, mention what they add: mermaid-cli (diagram checks, roadmap images for editors without Mermaid) and PyYAML (rare YAML forms). Say plainly that neither is needed.
+
+6. **The app.** In one line, mention that `/learn:app` opens Study Desk, an optional page in the browser with typeset maths and a tab per course, and that its tutor acts in this folder without asking (it says so before it starts). Do not start it from here.

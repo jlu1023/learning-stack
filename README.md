@@ -46,6 +46,7 @@ In Claude Code, in the folder you want to study in:
 | `/learn:lecture <course> <n>` | Optional: adds what the lecturer said aloud, from a transcript, to that lecture's notes. The slides stay the authority for formulas. |
 | `/learn:query <question>` | Answers from your notes, with a link for every claim. |
 | `/learn:lint` | A health check: broken links, theorems without proofs, failing primers, the review backlog. |
+| `/learn:app` | Optional: opens Study Desk, a local page in your browser with a tab per course, typeset maths and a progress table. |
 
 Behind the skills is a small engine, standard-library Python only, that keeps the learner state (`unseen`, `learning`, `secure`, `mastered`), schedules reviews on a 1, 3, 7, 21, 60-day ladder, schedules each proof on its own track, and draws the roadmaps. It runs on your machine; Claude Code sends the notes it reads to Claude as usual.
 
@@ -56,6 +57,19 @@ Choose "another editor" in `/learn:setup` (or set `frontend: plain` in `vault-le
 ## Using your own notes
 
 Run `/learn:setup` (or `/learn:connect`) in your notes folder. It reads your Markdown, PDFs and photos where they are, never edits them, and writes review cards to `_learn/` (or, with `--state-dir`, to a folder outside a read-only, shared or synced library). Rerun `/learn:connect` after you add or change notes: it finds new and changed files. See [SETUP.md](SETUP.md#using-your-own-notes).
+
+## Study Desk (optional app)
+
+`/learn:app` opens Study Desk: a page in your browser, served from your own machine, for working through a session without the terminal's limits. It has one tab per course plus a General tab, each with its own conversation; a home page with one ruled table of progress per course (started, due, redos, secure, mastered); maths typeset with KaTeX and diagrams drawn with Mermaid; linked notes that open beside the chat; photos of handwritten working pasted or dropped in; a style editor (themes, colours, fonts, sizes); and a status line with the model, the effort and your Claude usage limits.
+
+It is a shell and adds no teaching rules. The tutor in each tab is Claude Code itself, started in your study folder, following the same skills and the same engine, so it uses Claude Code exactly as you have it installed and signed in. The server is standard-library Python and the page's libraries ship with the plugin, so there is still nothing to install and the page loads nothing from the network.
+
+- **Start it:** `/learn:app` in Claude Code, or from your study folder `python3 <plugin>/app/serve.py` (on Windows `py -3 <plugin>\app\serve.py`), with the plugin's folder (shown by `/plugin`) in place of `<plugin>`. It opens `http://127.0.0.1:8030`; a second launch only opens the browser. Stop it with `/learn:app stop` (or `serve.py --stop`).
+- **Permissions, plainly:** the tutor in the app runs Claude Code in your study folder in permission mode `auto`, so **it reads and edits files and runs commands there without stopping to ask you** (a web page cannot show Claude Code's permission prompts). To change that, start it with `--permission-mode acceptEdits` (or `manual`, `dontAsk`, `plan`), or set `"permission_mode"` in the app's `config.json`; in those modes anything Claude Code would ask about is refused, so allow the engine command first ([SETUP.md](SETUP.md#permission-prompts)).
+- **Only this computer:** the server listens on 127.0.0.1 and refuses requests from other web pages. It never writes into your notes; your style settings, photos of working and its log go in a per-user data folder (`%LOCALAPPDATA%\StudyDesk` on Windows, `~/Library/Application Support/StudyDesk` on macOS, `~/.local/share/study-desk` on Linux).
+- **Windows shortcut:** `/learn:app shortcut` offers a "Study Desk" desktop shortcut that opens the app in its own window with no console.
+
+More in [plugin/app/README.md](plugin/app/README.md). Study Desk is an independent project, not made or endorsed by Anthropic.
 
 ## How it teaches
 
@@ -70,8 +84,9 @@ The AI tests; you learn. Hints before answers, problem sheets and past papers ci
 ```
 .claude-plugin/marketplace.json   the plugin marketplace (this repository)
 plugin/                           the Claude Code plugin "learn"
-  skills/                         setup, method, teach, quiz, primer, roadmap, ingest, connect, lecture, query, lint
+  skills/                         setup, method, teach, quiz, primer, roadmap, ingest, connect, lecture, query, lint, app
   engine/                         the engine: vl.py, vault_learning/ (standard library only), tests/
+  app/                            Study Desk, the optional local app: serve.py, studydesk/, static/, windows/, tests/
   vault-template/                 what /learn:setup copies: CLAUDE.md, templates, learning files, example course
 optional/granola/                 lecture transcripts: plugin setup, template, PRIVACY.md
 docs/                             the README image and a synthetic sample handout to try /learn:ingest on
