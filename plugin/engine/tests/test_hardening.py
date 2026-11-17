@@ -85,3 +85,8 @@ def test_doctor_survives_a_broken_pointer_file(tmp_path, monkeypatch, capsys):
 def test_a_note_that_is_not_utf8_does_not_stop_the_scan(vault, bad):
     (vault / "Courses/XX201/1 Basics/Odd.md").write_bytes(bad)
     Vault(vault)                                       # scanning tolerates it
+
+
+def test_where_lists_the_courses_without_the_reference_ones(vault, capsys):
+    code, out = _run(capsys, "--vault", str(vault), "where")
+    assert code == 0 and out["courses"] == ["XX201"] and out["library"] is None

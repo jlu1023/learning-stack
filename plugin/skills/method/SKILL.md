@@ -43,7 +43,7 @@ On Windows use `py -3`; if a form fails, try `python3`, `python`, `py -3` and ke
 - `roadmap <COURSE|all>`: regenerate the roadmap and its mastery colours.
 - `unit <COURSE> all|next|<N>`: teaching units (lectures, weeks or modules) with primer and `started`; `<N>` adds `node_list` with levels, neighbouring units and cross-course links.
 - `check-primer [<COURSE>|all]`: lint primers (exit 1 on failure).
-- Also: `index` (the Vault Index), `where` (folder, library, front end), `connect "<folder>"` and `library-scan` (library set-up; each file's status and integrity flags), `review-queue` (plain mode), `doctor` (Python and optional extras) and `init` (a new vault; the `setup` skill runs it).
+- Also: `index` (the Vault Index), `where` (folder, library, front end, courses), `connect "<folder>"` and `library-scan` (library set-up; each file's status and integrity flags), `review-queue` (plain mode), `doctor` (Python and optional extras) and `init` (a new vault; the `setup` skill runs it).
 
 If no Python works or a command fails unexpectedly, run `VL doctor` and pass on its advice (or ask for Python 3.10 or later from python.org). Never compute learner state by hand, and never read or write `confidence:` in frontmatter: it is not learner state.
 

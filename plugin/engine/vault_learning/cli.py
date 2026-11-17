@@ -10,7 +10,7 @@
   index [--dry-run]                                  regenerate _meta/Vault Index.md (also run by `roadmap all`)
   unit COURSE [all|next|N]                           teaching units (lecture, week, module) and their primers (JSON)
   check-primer [COURSE|all] [--no-validate]          lint lecture primers (exit 1 if any fail)
-  where                                              the folder in use, its library and front end (JSON)
+  where                                              the folder in use, its library, front end and courses (JSON)
   doctor                                             Python, optional extras and what each adds (JSON)
   init [FOLDER] [--frontend plain] [--no-example]    a new vault from the plugin's template (never overwrites)
   connect LIBRARY [--frontend plain|obsidian]        library mode: create the state folder (LIBRARY/_learn, or --state-dir)
@@ -427,7 +427,8 @@ def _run(args) -> int:
     if args.cmd == "where":
         out = {"root": str(v.root.resolve()), "frontend": config.SETTINGS["frontend"],
                "library": str(config.SETTINGS["library"]) if config.SETTINGS["library"] else None,
-               "settings_file": v.exists(config.CONFIG_NAME)}
+               "settings_file": v.exists(config.CONFIG_NAME),
+               "courses": roadmap_courses(v)}
     elif args.cmd == "library-scan":
         out = library_scan(v)
     elif args.cmd == "review-queue":
