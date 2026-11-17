@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Desk</title>
+<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/icon-48.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="stylesheet" href="/vendor/katex.min.css">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<div id="app">
+  <nav id="rail">
+    <div class="brand"><span class="brand-mark">∂</span><span class="brand-name">Study Desk</span><button id="rail-hide" title="Hide sidebar (Ctrl+B)">«</button></div>
+    <div id="tabs"></div>
+    <div class="rail-foot">
+      <div id="usage" title="Your Claude usage limits, as reported after each reply"></div>
+      <div class="rail-links">
+        <button id="btn-full" title="Fullscreen (F11)">Fullscreen</button>
+        <button id="btn-settings" title="Style and colours">Style</button>
+        <button id="btn-about" title="What everything does">About</button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section id="home" class="view"><div class="home-page"><h1>Study Desk</h1><p class="abstract">Reading your notes…</p></div></section>
+    <section id="desk" class="view" hidden>
+      <div id="tabstrip" hidden></div>
+      <div id="chat"><div id="chat-inner"></div></div>
+      <article id="noteview" hidden><div id="noteview-inner"></div></article>
+      <footer id="composer"><div class="composer-inner">
+        <div id="attachments"></div>
+        <div class="composer-row">
+          <span class="prompt">❯</span>
+          <textarea id="input" rows="1" spellcheck="true"></textarea>
+        </div>
+        <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden multiple>
+        <div class="statusline">
+          <div id="turn-meta"></div>
+          <div id="status">
+            <label>model <select id="sel-model" title="Model for the next message (/model)"></select></label>
+            <label>effort <select id="sel-effort" title="Reasoning effort for the next message (/effort)"></select></label>
+            <span id="status-usage" title="Claude 5-hour and weekly limits (/usage)"></span>
+          </div>
+        </div>
+      </div></footer>
+    </section>
+  </main>
+
+  <aside id="side" hidden>
+    <div class="side-head">
+      <div class="side-tabs">
+        <button data-pane="note" class="on">Note</button>
+        <button data-pane="units">Units</button>
+        <button data-pane="due">Due</button>
+      </div>
+      <button id="side-close" title="Close panel">✕</button>
+    </div>
+    <div id="pane-note" class="pane"><p class="muted">Click a linked concept in the chat, or a note in Units or Due, to read it here.</p></div>
+    <div id="pane-units" class="pane" hidden></div>
+    <div id="pane-due" class="pane" hidden></div>
+  </aside>
+</div>
+
+<button id="rail-show" hidden title="Show sidebar (Ctrl+B)">»</button>
+
+<div id="about" class="overlay" hidden>
+  <div class="settings-card">
+    <div class="settings-head"><h2>About Study Desk</h2><button id="about-close">✕</button></div>
+    <div class="about prose">
+      <p>A quiet window onto the learn plugin. The tutor is Claude Code running in your study folder, exactly as in the terminal, with maths typeset. Study Desk is an independent, open-source add-on; it is not made or endorsed by Anthropic.</p>
+      <h4>Sidebar</h4>
+      <p><b>Home</b> shows every course: how many ideas are started, due for review and waiting as Error Log redos. <b>Course tabs</b> are compartments, each with its own conversation; the number is what is due. <b>General</b> is for anything else. Conversations are not saved between launches. <b>«</b> hides the sidebar, <b>»</b> brings it back.</p>
+      <h4>Working</h4>
+      <p>Type at the <b>❯</b> prompt and press Enter (Shift+Enter for a new line). The plugin's commands work as in the terminal, with your own course code in place of <code>COURSE101</code>:</p>
+      <p><code>/learn:teach COURSE101 next</code> teach the next idea<br><code>/learn:teach COURSE101 resume</code> pick up an open session<br><code>/learn:quiz COURSE101</code> review what is due<br><code>/learn:quiz mixed</code> all courses mixed<br><code>/learn:teach COURSE101 proofs</code> proof track<br><code>/learn:teach COURSE101 test</code> unit test<br><code>/learn:primer COURSE101 next</code> overview of the next unit<br><code>/learn:primer week</code> the week ahead<br><code>/learn:roadmap COURSE101</code> redraw the roadmap<br><code>/clear</code> forget this tab's conversation<br><code>/model opus</code> <code>/effort high</code> change model or effort (or use the menus under the prompt)<br><code>/usage</code> show your limits</p>
+      <p>Paste or drop a photo of handwritten working to have it read. You can keep typing while it answers: messages queue and are sent in turn. Press Esc to stop a reply (queued messages come back to the prompt). While it works, the line under the prompt shows what it is doing and for how long; each reply notes how long it thought.</p>
+      <p>The tutor cannot show Claude Code's question boxes here, so it asks every question as plain text and waits for your typed reply.</p>
+      <h4>Permissions</h4>
+      <p>The tutor runs Claude Code in your study folder in permission mode <code id="about-mode"></code>. In <code>auto</code>, the default, Claude Code decides for itself which actions are safe and carries them out <b>without stopping to ask you</b>: it reads and edits files and runs commands in that folder, because this window cannot show its permission prompts. To change it, start Study Desk with <code>--permission-mode acceptEdits</code> (or <code>manual</code>, <code>dontAsk</code> or <code>plan</code>), or set <code>"permission_mode"</code> in <code>config.json</code> in the data folder named below. In those stricter modes anything Claude Code would normally ask about is refused rather than asked, so first allow the engine command in the folder's Claude Code settings (SETUP.md, Permission prompts) or the tutor cannot record your results.</p>
+      <h4>Notes and the side panel (Ctrl+.)</h4>
+      <p>Click any underlined concept and its note opens as a <b>tab</b> along the top, grouped under the course like a browser tab group; the first tab is always the tutor. Close a tab with × or a middle click. Shift+click a concept to read it in the side panel beside the chat instead (<b>Note</b>). <b>Units</b>: progress per lecture, week or module, with its overview. <b>Due</b>: what is due in this course (opening a note shows the answer).</p>
+      <h4>Colours</h4>
+      <p>Bars: <b style="color:var(--learning)">red</b> learning, <b style="color:var(--secure)">amber</b> secure, <b style="color:var(--mastered)">green</b> mastered, grey unseen. Course colours come from a built-in palette; change them under Style.</p>
+      <h4>Usage</h4>
+      <p>The line under the prompt shows the model, the effort and your Claude 5-hour and weekly limits, as in the terminal; the sidebar shows the same limits as bars. They update after each reply. The small line under the prompt shows the size of the last reply and of the conversation.</p>
+      <h4>Style</h4>
+      <p>Themes, every colour, course colours, font, text and maths size, column width, and the academic paper layout.</p>
+      <h4>Keys</h4>
+      <p>Ctrl+0 Home · Ctrl+1 to 9 tabs · Alt+← and Alt+→ previous and next note tab · Alt+W close note tab · Ctrl+B sidebar · Ctrl+. side panel · F11 fullscreen (Esc leaves it) · Esc stop or close</p>
+      <h4>Under the bonnet</h4>
+      <p>Folder in use: <code id="about-folder"></code>. Notes are read from disk each time, never from a copy.</p>
+      <p>The app only reads your notes. Progress is written by the tutor through the plugin's engine, as in the terminal. Everything runs on this computer at 127.0.0.1:<span id="about-port"></span>, and other web pages cannot reach it. Your style settings, photos of working and the server log are kept in <code id="about-data"></code>. If it says the server is not running, start it again (<code>/learn:app</code> in Claude Code, or the desktop shortcut) and reload this page.</p>
+    </div>
+  </div>
+</div>
+
+<div id="settings" class="overlay" hidden>
+  <div class="settings-card">
+    <div class="settings-head"><h2>Style and colours</h2><button id="settings-close">✕</button></div>
+    <div id="settings-body"></div>
+  </div>
+</div>
+
+<script src="/vendor/marked.umd.js"></script>
+<script src="/vendor/purify.min.js"></script>
+<script src="/vendor/katex.min.js"></script>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

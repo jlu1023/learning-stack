@@ -1,2 +1,9 @@
 * text=auto eol=lf
 *.png binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.vbs text eol=crlf
+# vendored libraries are kept byte for byte as published
+plugin/app/static/vendor/** -text
