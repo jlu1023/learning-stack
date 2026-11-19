@@ -906,10 +906,12 @@ class Handler(BaseHTTPRequestHandler):
                 raise HttpError(415, "PNG, JPEG, WebP or GIF only")
             self.send_json({"path": str(desk.save_upload(ext, self.read_body(MAX_UPLOAD)))})
         elif route == ("POST", "window-icon") and len(parts) == 1:
-            # Called by the page after it loads: swap the scaled-up favicon for the real icon.
+            # Called by the page after it loads: swap the scaled-up favicon for the real icon,
+            # and keep it there (the browser puts its own back from time to time).
             changed = 0
             if sys.platform == "win32":
                 from . import winicon
+                winicon.keep()
                 changed = winicon.apply()
             self.send_json({"windows": changed})
         elif route == ("POST", "shutdown") and len(parts) == 1:

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.1
+
+- Study Desk on Windows: the sharp taskbar icon now stays. Chrome and Edge put their scaled-up favicon back from time to time, so the server runs a small watcher that sets the full-size icon again whenever it has been replaced (it checks every two seconds and does nothing while the icon is right). Window messages time out, so a hung browser window cannot hold up the server.
+- The app's README describes the work screen: typed commands (`/model`, `/effort`, `/usage`, `/clear`), queued messages, the thinking line, notes opening as grouped tabs, the tutor's sparse emphasis and the traffic-light mastery colours.
+
 ## 1.6.0
 
 - Study Desk, an optional local app (`/learn:app`, or `python3 <plugin>/app/serve.py` from the study folder): a page in your browser with one tab per course plus a General tab, each with its own conversation; a home table of progress per course; maths typeset with KaTeX, Mermaid diagrams, wikilinks and Markdown links that open the note beside the chat; photos of working pasted or dropped in; a style editor; and a status line with the model, the effort and your Claude usage limits.

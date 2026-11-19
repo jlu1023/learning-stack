@@ -310,6 +310,7 @@ def test_engine_errors_arrive_as_their_message(running):
 def test_window_icon_endpoint_is_a_no_op_off_windows(client, monkeypatch):
     from studydesk import winicon
     monkeypatch.setattr(winicon, "apply", lambda title="Study Desk": 0)   # never touch real windows in a test
+    monkeypatch.setattr(winicon, "keep", lambda title="Study Desk": False)   # nor start the watcher
     status, _, body = client.post("/api/window-icon", headers=HEADER)
     assert status == 200 and json.loads(body) == {"windows": 0}
     assert client.post("/api/window-icon")[0] == 403
@@ -319,4 +320,5 @@ def test_winicon_imports_anywhere_and_does_nothing_off_windows(monkeypatch):
     from studydesk import winicon
     monkeypatch.setattr(sys, "platform", "linux")
     assert winicon.apply() == 0
+    assert winicon.keep() is False and winicon._watcher is None
     assert winicon.ICON.is_file()

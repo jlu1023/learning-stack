@@ -14,6 +14,16 @@ python3 <plugin>/app/serve.py            (Windows: py -3 <plugin>\app\serve.py)
 - Standard library only (Python 3.10 or later). The page's libraries are in `static/vendor`, so nothing is fetched from the network.
 - It uses Claude Code as you have it installed and signed in (`claude -p`); the app holds no key and makes no network connections of its own.
 
+## Working in it
+
+- **It looks like the terminal, typeset.** One column with a `❯` prompt, no buttons; maths renders as KaTeX in a Computer Modern face on a paper-white page. Theorem callouts read like a paper; Obsidian callouts, wikilinks, embeds, `%%` comments and `^block` ids are handled.
+- **Typed commands.** The plugin's skills work as in the terminal (`/learn:teach`, `/learn:quiz`, ...). The app adds `/model` and `/effort` (or the menus in the status line), `/usage` for your 5-hour and weekly limits, and `/clear` (or `/new`) to start the tab afresh.
+- **Queue while it answers.** Anything you send during a reply waits in the queue (shown dimmed) and goes when the reply ends; Esc stops the reply and puts queued text back in the box.
+- **See what it is doing.** A status line shows thinking time and thinking tokens while it works, the engine commands and tools it runs, then the total time, reply tokens and context size. (Claude Code does not stream the thinking text itself when run headless, so only its length and duration are shown.)
+- **Notes open as tabs.** A linked note opens as a tab next to the tutor, grouped under its course like browser tab groups; Shift+click opens it in the side panel instead.
+- **Sparse emphasis.** The tutor is told to bold only the term being defined and a theorem's hypotheses, with no colour or highlighting, and no emphasis inside a question, where it would give the answer away.
+- **Progress at a glance.** The home table and the side panel's Units view colour mastery as a traffic light: learning red, secure amber, mastered green, not yet seen grey.
+
 ## The permission mode
 
 The tutor is started with `--permission-mode auto`: **Claude Code reads and edits files and runs commands in the study folder without stopping to ask you**, because a web page cannot show its permission prompts. To choose a stricter mode:
@@ -69,7 +79,7 @@ The server listens on 127.0.0.1 only. Every request must name it as the Host (wh
 
 - `windows\make_shortcut.ps1 -Folder <study folder>` makes a "Study Desk" desktop shortcut. It runs `windows\launch.vbs`, which starts the server with no console window and opens the app in its own maximised window. Make the shortcut again after a plugin update, since the plugin's folder can move.
 - `windows\stop.ps1` stops the server (the same as `serve.py --stop`).
-- The app window gets a sharp taskbar icon (`studydesk/winicon.py`).
+- The app window gets a sharp taskbar icon (`studydesk/winicon.py`). Chrome and Edge scale a 16-pixel favicon up and put that back from time to time, so the server sets the full-size icon and a small watcher sets it again whenever the browser replaces it. If a pinned taskbar icon still looks old after an update, unpin it and pin it again: Windows caches pinned icons.
 
 ## Keys
 
