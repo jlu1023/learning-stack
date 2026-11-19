@@ -279,10 +279,36 @@ function renderAttachments() {
 // ------------------------------------------------------------ chat
 const fmt = n => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'k' : String(n);
 
+// Prompt history per tab, like the terminal's up arrow. Kept in this browser
+// (localStorage), so it survives F5 and a server restart; the conversation does not.
+const HIST_MAX = 10, histKey = id => 'studydesk.history.' + id;
+function loadHist(id) {
+  try { const h = JSON.parse(localStorage.getItem(histKey(id)) || '[]'); return Array.isArray(h) ? h : []; } catch { return []; }
+}
+function remember(id, text) {
+  const h = loadHist(id).filter(t => t !== text); h.push(text);
+  try { localStorage.setItem(histKey(id), JSON.stringify(h.slice(-HIST_MAX))); } catch { /* history is a convenience */ }
+  chat(id).histAt = null;
+}
+function recall(dir) {   // -1 older, +1 newer; true when the key was used
+  const id = state.current, box = $('#input');
+  if (id === 'home') return false;
+  const c = chat(id), h = loadHist(id);
+  if (!h.length) return false;
+  if (c.histAt == null) { if (dir > 0) return false; c.histDraft = box.value; c.histAt = h.length; }
+  const at = c.histAt + dir;
+  if (at < 0) return true;
+  if (at >= h.length) { c.histAt = null; box.value = c.histDraft || ''; }
+  else { c.histAt = at; box.value = h[at]; }
+  autosize(); box.setSelectionRange(box.value.length, box.value.length);
+  return true;
+}
+
 async function send(text, queued) {
   const id = queued ? queued.id : state.current, c = chat(id);
   text = (text ?? $('#input').value).trim();
   if (!text && !c.attachments.length) return;
+  if (!queued && text) remember(id, text);
   if (c.busy) {   // queue it, as the terminal does: it is sent when the current reply ends
     if (text.startsWith('/')) return;
     const item = { text, images: c.attachments.splice(0), row: el('div', 'msg user queued') };
@@ -563,7 +589,16 @@ function localCommand(text, c) {
 
 // ------------------------------------------------------------ wiring
 $('#input').addEventListener('input', autosize);
-$('#input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); } });
+$('#input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); return; }
+  // Up on the first line and Down on the last line walk this tab's past prompts, as in the terminal.
+  if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey && !e.isComposing) {
+    const box = e.target, v = box.value;
+    if (box.selectionStart !== box.selectionEnd) return;
+    const edge = e.key === 'ArrowUp' ? v.lastIndexOf('\n', box.selectionStart - 1) === -1 : v.indexOf('\n', box.selectionEnd) === -1;
+    if (edge && recall(e.key === 'ArrowUp' ? -1 : 1)) e.preventDefault();
+  }
+});
 $('#input').addEventListener('paste', e => { const f = [...e.clipboardData.files]; if (f.length) { e.preventDefault(); attach(f); } });
 $('#file').onchange = e => { attach([...e.target.files]); e.target.value = ''; };
 addEventListener('dragover', e => { if (state.current !== 'home') { e.preventDefault(); document.body.classList.add('dragging'); } });

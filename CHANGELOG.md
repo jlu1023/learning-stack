@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.2
+
+- Study Desk: Up and Down in the prompt recall that tab's last 10 prompts, as in the terminal. They are kept in the browser (local storage), so they survive a reload and a server restart; conversations still live only while the server runs.
+
 ## 1.6.1
 
 - Study Desk on Windows: the sharp taskbar icon now stays. Chrome and Edge put their scaled-up favicon back from time to time, so the server runs a small watcher that sets the full-size icon again whenever it has been replaced (it checks every two seconds and does nothing while the icon is right). Window messages time out, so a hung browser window cannot hold up the server.

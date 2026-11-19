@@ -18,6 +18,7 @@ python3 <plugin>/app/serve.py            (Windows: py -3 <plugin>\app\serve.py)
 
 - **It looks like the terminal, typeset.** One column with a `❯` prompt, no buttons; maths renders as KaTeX in a Computer Modern face on a paper-white page. Theorem callouts read like a paper; Obsidian callouts, wikilinks, embeds, `%%` comments and `^block` ids are handled.
 - **Typed commands.** The plugin's skills work as in the terminal (`/learn:teach`, `/learn:quiz`, ...). The app adds `/model` and `/effort` (or the menus in the status line), `/usage` for your 5-hour and weekly limits, and `/clear` (or `/new`) to start the tab afresh.
+- **Past prompts.** Up and Down in the prompt bring back that tab's last 10 prompts, as in the terminal (in a prompt of several lines, once the cursor is on the first or last line). They are kept in the browser, so they survive a reload and a server restart; the conversation itself does not.
 - **Queue while it answers.** Anything you send during a reply waits in the queue (shown dimmed) and goes when the reply ends; Esc stops the reply and puts queued text back in the box.
 - **See what it is doing.** A status line shows thinking time and thinking tokens while it works, the engine commands and tools it runs, then the total time, reply tokens and context size. (Claude Code does not stream the thinking text itself when run headless, so only its length and duration are shown.)
 - **Notes open as tabs.** A linked note opens as a tab next to the tutor, grouped under its course like browser tab groups; Shift+click opens it in the side panel instead.
@@ -83,6 +84,6 @@ The server listens on 127.0.0.1 only. Every request must name it as the Host (wh
 
 ## Keys
 
-Enter sends, Shift+Enter new line, Ctrl+0 Home, Ctrl+1 to 9 tabs, Alt+Left and Alt+Right note tabs, Alt+W close a note tab, Ctrl+B sidebar, Ctrl+. side panel, F11 fullscreen, Esc stops a reply or closes a panel.
+Enter sends, Shift+Enter new line, Up and Down past prompts, Ctrl+0 Home, Ctrl+1 to 9 tabs, Alt+Left and Alt+Right note tabs, Alt+W close a note tab, Ctrl+B sidebar, Ctrl+. side panel, F11 fullscreen, Esc stops a reply or closes a panel.
 
 Study Desk is an independent, open-source project. It is not made, endorsed or supported by Anthropic.
